@@ -371,10 +371,25 @@ textarea.field { min-height:78px;resize:vertical; }
           </div>
 
         </article>
+        <div class="import-help-line" style="display:flex;align-items:center;gap:9px;margin:0 0 14px">
+          <button class="icon-btn" id="importHelpBtn" type="button" aria-label="Como funciona a Grafia?" title="Como funciona?" style="width:30px;height:30px;font-weight:800;font-size:15px">?</button>
+          <span class="panel-description">Como importar uma correção? Toque no “?” para entender as opções.</span>
+        </div>
         <div class="import-layout">
           <div>
             <article class="panel glass" style="margin-bottom:14px">
-              <div class="panel-head"><div><div class="panel-title">Importar uma correção</div><div class="panel-description">A redação e o espelho de correção são campos separados para evitar misturar o texto com os comentários.</div></div><span class="pill">Entrada</span></div>
+              <div class="panel-head"><div><div class="panel-title">1. Importar arquivo ou código</div><div class="panel-description">Use um arquivo JSON de correção ou cole o código gerado no campo abaixo. Esta opção permite marcações e comentários mais completos.</div></div><span class="pill">Mais detalhada</span></div>
+              <div class="form-field full"><label for="legacyVisiblePaste">Código da correção (JSON)</label><textarea class="field" id="legacyVisiblePaste" rows="7" placeholder="Cole aqui o código JSON completo da correção."></textarea></div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+                <label class="secondary-btn" for="legacyVisibleFile" style="cursor:pointer">Enviar arquivo JSON</label><input id="legacyVisibleFile" type="file" accept="application/json,.json,text/json" hidden>
+                <button class="primary-btn" id="legacyVisibleImport" type="button">Validar e preparar</button>
+                <button class="secondary-btn" id="legacyVisibleClear" type="button">Limpar</button>
+                <button class="secondary-btn" id="legacyVisiblePrompt" type="button">Baixar prompt desta opção (.txt)</button>
+              </div>
+              <div class="upload-footnote">Para melhores resultados, use o prompt desta opção e depois cole aqui o código JSON gerado.</div>
+            </article>
+            <article class="panel glass" style="margin-bottom:14px">
+              <div class="panel-head"><div><div class="panel-title">2. Importar redação e espelho</div><div class="panel-description">Cole a redação original e o texto da correção nos campos separados.</div></div><span class="pill">Texto</span></div>
               <div class="form-field full"><label for="grafiaEssayText">Transcrição da redação original</label><textarea class="field" id="grafiaEssayText" rows="8" placeholder="Cole aqui somente o texto que você escreveu, sem os comentários da correção."></textarea></div>
               <div class="form-field full" style="margin-top:12px"><label for="grafiaConversationText">Texto da correção</label><textarea class="field" id="grafiaConversationText" rows="12" placeholder="Cole aqui a correção completa, mesmo que seja longa e esteja em formato de tabela, lista ou texto corrido."></textarea></div>
               <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="primary-btn" id="grafiaAnalyzeBtn">Analisar e preparar importação</button><button class="secondary-btn" id="grafiaClearBtn">Limpar</button><label class="secondary-btn" for="grafiaSourceFile" style="cursor:pointer">Selecionar arquivo de texto/JSON</label><input id="grafiaSourceFile" type="file" accept=".txt,.json,.md,.text,application/json,text/plain" hidden></div>
@@ -396,7 +411,7 @@ textarea.field { min-height:78px;resize:vertical; }
               <div class="insight"><div class="insight-icon"><span>✓</span></div><div><strong>Valida correções estruturadas</strong><p>Quando o texto segue formatos comuns, o Grafia extrai tema, notas e comentários por competência.</p></div></div>
               <div class="insight"><div class="insight-icon"><span>✓</span></div><div><strong>Conferência antes de salvar</strong><p>O Grafia sinaliza dados ausentes ou ambíguos antes da importação.</p></div></div>
             </div>
-            <div style="margin-top:16px"><button class="secondary-btn" id="grafiaShowFormatBtn">Ver formato JSON aceito</button><button class="secondary-btn" id="grafiaDownloadPromptBtn" style="margin:7px 0 0">Baixar prompt de correção (.txt)</button></div>
+            <div style="margin-top:16px"><button class="secondary-btn" id="grafiaShowFormatBtn">Ver formato JSON aceito</button><button class="secondary-btn" id="grafiaDownloadPromptBtn" style="margin:7px 0 0">Baixar prompt desta opção (.txt)</button></div>
           </aside>
         </div>
       </section>
@@ -423,6 +438,7 @@ textarea.field { min-height:78px;resize:vertical; }
   <nav class="mobile-nav glass" aria-label="Navegação inferior"><button class="nav-btn active" data-view="overview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg>Início</button><button class="nav-btn" data-view="essays"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3.5h8l4 4V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1Z"/><path d="M14 3.5v5h5M8 12h8M8 15.5h8"/></svg>Redações</button><button class="nav-btn" data-view="skills"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5V13M10 19.5V5M16 19.5V9M22 19.5V3"/></svg>Notas</button><button class="nav-btn" data-view="study"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5.5h16v13H4z"/><path d="M8 9h8M8 12h8M8 15h5"/></svg>Padrões</button><button class="nav-btn" data-view="import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V3m0 0L7.5 7.5M12 3l4.5 4.5"/><path d="M4 14v5.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V14"/></svg>Importar</button><button class="nav-btn" data-view="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.3 1-1.5 2.6-1.6-.6a8 8 0 0 1-1.6.9l-.3 1.7h-3l-.3-1.7a8 8 0 0 1-1.6-.9l-1.6.6-1.5-2.6 1.3-1a7 7 0 0 1 0-1.9l-1.3-1L7.3 9.5l1.6.6a8 8 0 0 1 1.6-.9l.3-1.7h3l.3 1.7a8 8 0 0 1 1.6.9l1.6-.6 1.5 2.6-1.3 1a7 7 0 0 1 0 1.9Z"/></svg>Ajustes</button></nav>
 </div>
 
+<div class="modal-backdrop" id="importHelpModal" role="dialog" aria-modal="true" aria-labelledby="importHelpTitle"><div class="modal"><div class="modal-head"><div><h2 id="importHelpTitle">Como funciona a Grafia?</h2></div><button class="close-btn" id="closeImportHelp" aria-label="Fechar">×</button></div><div class="panel-description" style="font-size:13px;line-height:1.7;margin:4px 0 16px">A Grafia organiza suas redações, correções e diagnósticos para ajudar você a acompanhar sua evolução.<br><br><strong>Como importar?</strong><br>• <strong>Arquivo ou código:</strong> oferece informações mais completas e precisas sobre notas, marcações e comentários.<br>• <strong>Redação e espelho:</strong> você envia os dois textos, e a Grafia tenta identificar as informações relevantes. A análise pode ser menos detalhada.<br><br><strong>Dica:</strong> baixe o prompt correspondente à opção escolhida para orientar sua ferramenta de correção a gerar dados mais compatíveis com a Grafia.<br><br>Confira a prévia e confirme para salvar sua redação.</div><div class="form-actions"><button class="primary-btn" id="closeImportHelpBtn" type="button">Entendi</button></div></div></div>
 <div id="legacyImportControls" hidden><label id="uploadZone" for="correctionInput"><input type="file" id="correctionInput" accept="application/json,.json,text/json"></label><textarea id="correctionPaste"></textarea><button id="pasteImportBtn" type="button">Validar</button><button id="clearPasteBtn" type="button">Limpar</button><button id="showFormatBtn" type="button">Formato</button><button id="downloadTemplateBtn" type="button">Prompt</button></div>
 <div class="modal-backdrop" id="essayModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><div class="modal-head"><div><h2 id="modalTitle">Adicionar redação</h2><p id="modalSubtitle">Preencha as informações. Você poderá revisar seus dados antes de salvar.</p></div><button class="close-btn" id="closeModal" aria-label="Fechar">×</button></div><div id="modalAlert"></div><form id="essayForm"><div class="form-grid"><div class="form-field full"><label for="fTheme">Tema da redação</label><input id="fTheme" class="field" required maxlength="220" placeholder="Ex.: Desafios para…"></div><div class="form-field"><label for="fDate">Data da correção</label><input id="fDate" class="field" type="date" required></div><div class="form-field"><label for="fScore">Nota total (0–1000)</label><input id="fScore" class="field" type="number" min="0" max="1000" step="1" required placeholder="760"></div><div class="form-field full"><label>Pontuação por competência (0–200)</label><div class="competency-inputs"><div class="form-field"><label for="fC1">C1</label><input id="fC1" class="field" type="number" min="0" max="200" step="40" placeholder="160"></div><div class="form-field"><label for="fC2">C2</label><input id="fC2" class="field" type="number" min="0" max="200" step="40" placeholder="160"></div><div class="form-field"><label for="fC3">C3</label><input id="fC3" class="field" type="number" min="0" max="200" step="40" placeholder="160"></div><div class="form-field"><label for="fC4">C4</label><input id="fC4" class="field" type="number" min="0" max="200" step="40" placeholder="160"></div><div class="form-field"><label for="fC5">C5</label><input id="fC5" class="field" type="number" min="0" max="200" step="40" placeholder="160"></div></div><div style="font-size:10px;color:var(--muted);margin-top:6px">Se não souber as pontuações, deixe em branco. A soma das competências não será presumida como nota total.</div></div><div class="form-field full"><label for="fNotes">Observações da correção (opcional)</label><textarea id="fNotes" class="field" placeholder="Pontos fortes, aspectos a melhorar, comentários do corretor…"></textarea></div><div class="form-field full"><label for="fSource">Origem</label><select id="fSource" class="field"><option value="manual">Preenchimento manual</option><option value="json">Arquivo de correção estruturado (JSON)</option></select></div></div><div class="form-actions"><button type="button" class="secondary-btn" id="cancelModal">Cancelar</button><button type="submit" class="primary-btn">Salvar no histórico</button></div></form></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"><strong id="toastTitle">Pronto</strong><span id="toastMessage"></span></div>
@@ -431,6 +447,110 @@ textarea.field { min-height:78px;resize:vertical; }
 'use strict';
 const COMP_NAMES = ['Domínio da modalidade escrita','Compreensão do tema','Seleção e organização dos argumentos','Mecanismos linguísticos de coesão','Proposta de intervenção'];
 const COMP_SHORT = ['C1','C2','C3','C4','C5'];
+const GRAFIA_COMPAT_PROMPT = `GUIA DE CORREÇÃO E FORMATO DE DADOS COMPATÍVEL COM A GRAFIA
+
+PAPEL
+Você é corretor de redações e organizador de dados para a plataforma Grafia. Corrija com rigor, clareza e finalidade pedagógica. Não afirme que a Grafia salvou ou importou os dados. A avaliação é estimativa pedagógica, não nota oficial. Não invente fatos, citações, fontes, erros ou evidências ausentes do texto.
+
+ENTRADAS
+O usuário pode fornecer a transcrição integral da redação e o espelho de correção, em prosa, tópicos, tabelas ou mistura desses formatos. Preserve o texto original exatamente como foi fornecido. Use os comentários do espelho como fonte principal: não os reescreva nem os resuma ao montar os dados. Cada observação relevante deve aparecer em uma marcação ou em unlinkedComments.
+
+NOTAS E COMPETÊNCIAS
+Quando o método for ENEM, use C1–C5, cada uma de 0 a 200, seguindo a matriz aplicável. O total é a soma exata das cinco notas. Em outra escala, não invente equivalência oficial; explique a limitação e solicite autorização antes de adaptar.
+
+ANOTAÇÕES INTERATIVAS
+Para cada erro, acerto ou ponto argumentativo específico, tente criar uma anotação com:
+- id: identificador único.
+- start: índice inicial inclusivo no campo text.
+- end: índice final exclusivo no campo text.
+- quote: trecho literal, contínuo e exato, para o qual o comentário realmente se aplica.
+- competency: C1, C2, C3, C4 ou C5.
+- category: tipo específico, por exemplo Concordância verbal, Regência verbal, Repertório sociocultural, Pertinência ao tema, Desenvolvimento argumentativo, Progressão textual, Coesão, Agente da intervenção, Ação da intervenção, Meio de execução, Finalidade ou Detalhamento.
+- comment: comentário fiel ao espelho, mantendo a explicação original completa e específica.
+- suggestion: forma corrigida, somente quando o espelho propuser uma correção textual concreta.
+- studySuggestion: orientação de estudo, somente quando vier expressa na correção.
+
+ÍNDICES E PRECISÃO
+Os índices são índices de string JavaScript (UTF-16). Verifique que text.slice(start, end) seja exatamente igual a quote. Use a ocorrência correta quando o mesmo trecho aparece mais de uma vez. Não invente trechos, não use localização aproximada como se fosse literal e evite marcações sobrepostas. Prefira grifar o fragmento mais específico. Se um comentário não puder ser ligado com segurança a um trecho, não o descarte: coloque-o em unlinkedComments. Não transforme a frase corrigida que aparece no comentário em uma segunda ocorrência de erro se ela não estiver na redação original.
+
+ANÁLISE AMPLA
+Não limite a análise à gramática. Inclua, quando presentes na correção: referências e repertórios culturais; relação do repertório com o tema; tese e argumentos; explicações de causa e consequência; evidências e exemplos; progressão e coerência; conectivos e retomadas; repetições; agente, ação, meio/modo, finalidade/efeito e detalhamento da proposta de intervenção; pontos fortes; comentários gerais por competência. Repetições de uma mesma categoria devem ser contabilizadas no diagnóstico. Não invente um problema quando o texto não o comprova.
+
+OBSERVAÇÕES SEM GRIFO
+unlinkedComments deve preservar toda observação real que não conseguiu ser associada a um trecho literal. Cada item pode conter id, competency, category, quote e comment. A ausência de um grifo não é motivo para omitir a observação. Não repita ali o mesmo comentário já exibido em uma anotação, a menos que seja uma avaliação geral distinta.
+
+DIAGNÓSTICO POR COMPETÊNCIA
+errorSummary deve conter cinco objetos, um por competência. Cada objeto deve conter competency, mainError, count e, quando possível, patterns. Cada pattern tem name e count. Conte ocorrências observadas; não use valores ilustrativos como se fossem reais. Se não houver erro claro, diga honestamente que o aspecto está adequado ou que não houve ocorrência identificada.
+
+PONTOS FORTES E SÍNTESE
+strengths deve ser uma lista de pontos fortes realmente encontrados. overallFeedback deve conter a síntese geral do espelho, preservada de forma fiel. Não gere studyPlan nem tarefas de treino; a Grafia exibirá os comentários e os padrões, sem sugerir tarefas automáticas.
+
+FORMATO DE SAÍDA OBRIGATÓRIO
+Responda primeiro com a correção legível para a pessoa. Em seguida, forneça um único bloco de código \`\`\`json com um objeto JSON válido, completo, sem comentários dentro do JSON, sem reticências e sem vírgulas finais. O aplicativo aceita o JSON dentro da mensagem de correção; a pessoa pode colar a mensagem completa, incluindo o bloco JSON.
+
+Use exatamente esta estrutura, preenchendo todos os dados reais:
+{
+  "format": "escrita.correction",
+  "version": 1,
+  "correction": {
+    "id": "identificador-unico",
+    "theme": "Tema real da redação",
+    "date": "AAAA-MM-DD",
+    "score": 0,
+    "competencies": {
+      "C1": {"score": 0},
+      "C2": {"score": 0},
+      "C3": {"score": 0},
+      "C4": {"score": 0},
+      "C5": {"score": 0}
+    },
+    "text": "Texto integral original, preservado sem correções silenciosas.",
+    "annotations": [
+      {
+        "id": "a1",
+        "start": 0,
+        "end": 1,
+        "quote": "trecho literal exato",
+        "competency": "C1",
+        "category": "Categoria específica",
+        "comment": "Comentário completo e fiel ao espelho.",
+        "suggestion": "Correção proposta, quando existir.",
+        "studySuggestion": "Orientação de estudo, quando existir."
+      }
+    ],
+    "unlinkedComments": [
+      {
+        "id": "u1",
+        "competency": "C3",
+        "category": "Comentário geral",
+        "quote": "",
+        "comment": "Observação do espelho que não pode ser ligada com segurança a um fragmento literal."
+      }
+    ],
+    "errorSummary": [
+      {"competency":"C1","mainError":"Diagnóstico real de C1","count":0,"patterns":[]},
+      {"competency":"C2","mainError":"Diagnóstico real de C2","count":0,"patterns":[]},
+      {"competency":"C3","mainError":"Diagnóstico real de C3","count":0,"patterns":[]},
+      {"competency":"C4","mainError":"Diagnóstico real de C4","count":0,"patterns":[]},
+      {"competency":"C5","mainError":"Diagnóstico real de C5","count":0,"patterns":[]}
+    ],
+    "overallFeedback": "Síntese geral fiel ao espelho.",
+    "strengths": ["Ponto forte comprovado pelo texto"]
+  }
+}
+
+ANTES DE ENTREGAR, CONFIRA
+1. O texto integral foi preservado?
+2. Há cinco notas válidas e score é exatamente sua soma?
+3. Cada quote é literal e start/end correspondem à string JavaScript exata?
+4. Os comentários mantêm o sentido e a explicação original, sem serem encurtados?
+5. Todos os comentários — inclusive gerais e sem trecho grifável — aparecem em annotations ou unlinkedComments?
+6. Repertório, argumentação, coesão, intervenção e repetições foram incluídos quando o espelho os menciona?
+7. O diagnóstico reflete ocorrências reais e não duplica uma observação?
+8. O JSON é válido e não contém conteúdo fictício?
+
+O aplicativo pode interpretar espelhos em texto corrido, tópicos e tabelas como alternativa. Para máxima fidelidade, inclua o JSON estruturado junto da resposta legível; a aplicação validará e exibirá as informações, sem inventar comentários ausentes do espelho.
+`;
 const SAMPLE = [
  {id:'s1',theme:'Desafios para a valorização da herança africana no Brasil',date:'2026-09-25',score:680,comps:[160,160,120,120,120],notes:'Exemplo: ampliar a análise crítica dos repertórios e aprofundar a relação entre argumento e tese.',source:'sample'},
  {id:'s2',theme:'A democratização do acesso à cultura no Brasil',date:'2026-09-29',score:720,comps:[160,160,160,120,120],notes:'Exemplo: observar a progressão entre os períodos e detalhar melhor a proposta de intervenção.',source:'sample'},
@@ -464,9 +584,9 @@ function renderCompetencies(){const comps=skillAvgs();$('overviewComps').innerHT
 function renderRecent(){const rows=[...essays].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,4);$('recentRows').innerHTML=rows.length?rows.map(e=>`<tr><td class="topic-cell"><div class="topic-name">${esc(e.theme)}</div><div class="topic-date">${esc(e.source==='sample'?'Exemplo demonstrativo':fmtDate(e.date))}</div></td><td><span class="score-chip">${Number(e.score)||0}</span></td><td>${esc(fmtDate(e.date))}</td><td><span class="status">Registrada</span></td></tr>`).join(''):'<tr><td colspan="4"><div class="empty-state">Nenhuma redação ainda. Importe o JSON que acompanha sua correção para começar.</div></td></tr>';}
 function renderInsights(){const box=$('insights');if(!essays.length){box.innerHTML=`<div class="insight"><div class="insight-icon">${svgIcon('book')}</div><div><strong>Seu primeiro insight está por vir</strong><p>Depois de importar correções com notas e competências, o painel destacará tendências nos dados registrados.</p></div></div>`;return;}const latest=latestEssay(),best=bestSkill(),worst=worstSkill();const list=[];if(best)list.push({icon:'good',title:`Seu destaque é ${best.short}`,text:`Média de ${best.avg}/200 em ${best.name.toLowerCase()}. Continue praticando para manter a consistência.`});if(worst)list.push({icon:'warn',title:`Atenção a ${worst.short}`,text:`Média de ${worst.avg}/200 em ${worst.name.toLowerCase()}. Use os comentários das correções para definir um foco.`});if(essays.length>1){const sorted=[...essays].sort((a,b)=>(a.date||'').localeCompare(b.date||''));const first=Number(sorted[0].score)||0,last=Number(sorted[sorted.length-1].score)||0;list.push({icon:last>=first?'good':'warn',title:last>=first?'Sua última nota está acima da primeira':'Compare o que mudou no percurso',text:`Diferença entre a primeira e a última nota registrada: ${last-first>0?'+':''}${last-first} pontos. Isso não substitui a análise dos textos.`});}box.innerHTML=list.slice(0,3).map(x=>`<div class="insight"><div class="insight-icon ${x.icon==='warn'?'attention':''}">${svgIcon(x.icon)}</div><div><strong>${esc(x.title)}</strong><p>${esc(x.text)}${isSampleOnly()?' (exemplos fictícios)':''}</p></div></div>`).join('');}
 function renderLibrary(){const q=($('essaySearch').value||'').trim().toLocaleLowerCase('pt-BR');const rows=[...essays].sort((a,b)=>{const aa=Number(a.addedAt)||0,bb=Number(b.addedAt)||0;return bb-aa||((b.date||'').localeCompare(a.date||''));}).filter(e=>String(e.theme||'').toLocaleLowerCase('pt-BR').includes(q));$('essayLibrary').innerHTML=rows.length?rows.map(e=>`<article class="essay-card glass"><div class="essay-card-top"><div><h3>${esc(e.theme)}</h3><p>${esc(fmtDate(e.date))}${e.source==='sample'?' · exemplo demonstrativo':''}</p></div><div class="essay-card-score">${Number(e.score)||0}<span style="font-size:10px;color:var(--muted);font-weight:600">/1000</span></div></div><div class="essay-card-footer"><span>${Array.isArray(e.comps)&&e.comps.some(Number.isFinite)?'Pontuações por competência disponíveis':'Sem pontuação por competência'}</span><div style="display:flex;gap:10px;align-items:center"><button class="text-link" data-detail="${esc(e.id)}">Ver detalhes →</button><button class="danger-btn" data-delete-essay="${esc(e.id)}" aria-label="Excluir redação ${esc(e.theme)}">Excluir</button></div></div></article>`).join(''):'<div class="panel glass empty-state" style="grid-column:1/-1">'+svgIcon('book')+'<strong>Nenhuma redação encontrada</strong>Importe um arquivo JSON de correção ou ajuste sua busca.</div>';$('essayLibrary').querySelectorAll('[data-detail]').forEach(b=>b.addEventListener('click',()=>showEssay(b.dataset.detail)));$('essayLibrary').querySelectorAll('[data-delete-essay]').forEach(b=>b.addEventListener('click',()=>deleteEssay(b.dataset.deleteEssay)));}
-function deleteEssay(id){const e=essays.find(x=>String(x.id)===String(id));if(!e)return;if(!confirm(`Excluir a redação “${e.theme}”? Esta ação também removerá seus dados de correção deste painel.`))return;essays=essays.filter(x=>String(x.id)!==String(id));Object.keys(taskStatuses).forEach(k=>{if(k.startsWith(String(id)+'::'))delete taskStatuses[k];});if(activeEssayId===id){activeEssayId=null;setView('essays');}saveData();saveTaskStatuses();render();toast('Redação excluída','A redação e as atividades associadas foram removidas do painel.');}
+function deleteEssay(id){const e=essays.find(x=>String(x.id)===String(id));if(!e)return;if(!confirm(`Excluir a redação “${e.theme}”? Esta ação também removerá seus dados de correção deste painel.`))return;essays=essays.filter(x=>String(x.id)!==String(id));Object.keys(taskStatuses).forEach(k=>{if(k.startsWith(String(id)+'::'))delete taskStatuses[k];});if(activeEssayId===id){activeEssayId=null;setView('essays');}saveData();saveTaskStatuses();render();toast('Redação excluída','A redação e seus dados associados foram removidos do painel.');}
 function renderSettings(){$('settingsGoal').value=goal;}
-function setView(name){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id==='view-'+name));document.querySelectorAll('.nav-btn[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));const titles={overview:['SEU PAINEL PESSOAL','Sua evolução, em perspectiva.','Cada redação é um passo a mais rumo à sua melhor versão.'],essays:['SEU ARQUIVO','Sua biblioteca de redações.','Reúna suas correções e acompanhe sua jornada.'],skills:['ANÁLISE DE DESEMPENHO','Entenda suas competências.','Transforme notas em próximos passos de estudo.'],study:['PLANO DE ESTUDO','Seus erros viram prioridades.','Veja os padrões recorrentes e o que praticar para melhorar.'],reader:['LEITURA INTERATIVA','Sua redação, trecho por trecho.','Clique nas marcações coloridas para consultar os comentários.'],import:['GRAFIA · BETA','Organize suas correções com a Grafia.','Traga conversas e redações, confira os dados e escolha o que salvar.'],settings:['CONFIGURAÇÕES','Seu painel, do seu jeito.','Controle sua meta e seus dados locais.']};const t=titles[name]||titles.overview;$('pageEyebrow').textContent=t[0];$('pageTitle').textContent=t[1];$('pageSubtitle').textContent=t[2];window.scrollTo({top:0,behavior:'smooth'});}
+function setView(name){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id==='view-'+name));document.querySelectorAll('.nav-btn[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));const titles={overview:['SEU PAINEL PESSOAL','Sua evolução, em perspectiva.','Cada redação é um passo a mais rumo à sua melhor versão.'],essays:['SEU ARQUIVO','Sua biblioteca de redações.','Reúna suas correções e acompanhe sua jornada.'],skills:['ANÁLISE DE DESEMPENHO','Entenda suas competências.','Transforme notas em próximos passos de estudo.'],study:['PADRÕES','Padrões das suas correções.','Veja os tipos de erro que se repetem nas redações importadas.'],reader:['LEITURA INTERATIVA','Sua redação, trecho por trecho.','Clique nas marcações coloridas para consultar os comentários.'],import:['GRAFIA · BETA','Organize suas correções com a Grafia.','Traga conversas e redações, confira os dados e escolha o que salvar.'],settings:['CONFIGURAÇÕES','Seu painel, do seu jeito.','Controle sua meta e seus dados locais.']};const t=titles[name]||titles.overview;$('pageEyebrow').textContent=t[0];$('pageTitle').textContent=t[1];$('pageSubtitle').textContent=t[2];window.scrollTo({top:0,behavior:'smooth'});}
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.goto)));
 function toast(title,message){const el=$('toast');$('toastTitle').textContent=title;$('toastMessage').textContent=message;el.classList.remove('dismissed');el.style.transform='translate3d(0,0,0)';el.style.opacity='';el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>dismissToast(),4200);}
 function dismissToast(){const el=$('toast');el.classList.add('dismissed');clearTimeout(toast.t);setTimeout(()=>{el.classList.remove('show','dismissed');el.style.transform='';el.style.opacity='';},240);}
@@ -480,55 +600,156 @@ $('essaySearch').addEventListener('input',renderLibrary);$('clearDemo').addEvent
 $('saveGoal').addEventListener('click',()=>{const v=Number($('settingsGoal').value);if(!Number.isFinite(v)||v<0||v>1000){toast('Meta inválida','Escolha um valor entre 0 e 1000.');return;}goal=Math.round(v);saveGoalLocal();render();toast('Meta atualizada','Sua meta pessoal foi salva neste dispositivo.');});$('resetData').addEventListener('click',()=>{if(!confirm('Apagar as redações salvas neste navegador e restaurar os exemplos?'))return;essays=SAMPLE.map(x=>({...x}));taskStatuses={};goal=900;saveData();saveTaskStatuses();saveGoalLocal();render();setView('overview');toast('Painel restaurado','Os exemplos demonstrativos foram restaurados.');});$('exportBtn').addEventListener('click',exportCsv);$('settingsExport').addEventListener('click',exportCsv);
 function exportCsv(){if(!essays.length){toast('Sem dados','Adicione uma redação antes de exportar.');return;}const header=['Tema','Data','Nota total','C1','C2','C3','C4','C5','Observações','Origem'];const rows=essays.map(e=>[e.theme,e.date,e.score,...(e.comps||[null,null,null,null,null]),e.notes,e.source]);const csv='\uFEFF'+[header,...rows].map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');downloadBlob(csv,'historico_redacoes.csv','text/csv;charset=utf-8');toast('Exportação iniciada','Seu arquivo CSV está pronto para baixar.');}
 function downloadBlob(content,name,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);}
-function normalizeCorrection(raw){
-  const root=raw && raw.correction ? raw.correction : raw;
-  if(!root || typeof root!=='object') throw new Error('O arquivo não contém um objeto de correção.');
-  const format=raw && raw.format;
-  if(format && format!=='escrita.correction') throw new Error('Formato desconhecido. Esperava “escrita.correction”.');
-  const theme=String(root.theme||'').trim();
-  const textValue=String(root.text||root.essayText||'');
-  if(!theme) throw new Error('O tema da redação está ausente.');
-  if(textValue.trim().length<30) throw new Error('O texto integral da redação está ausente ou curto demais.');
-  const comps=COMP_SHORT.map((key,i)=>{
-    const value=root.competencies?.[key]?.score ?? (Array.isArray(root.comps)?root.comps[i]:null);
-    const v=value===null||value===undefined||value===''?null:Number(value);
-    if(v!==null&&(!Number.isFinite(v)||!Number.isInteger(v)||v<0||v>200)) throw new Error(`Pontuação ${key} inválida; use um número inteiro entre 0 e 200.`);
-    return v;
-  });
-  if(comps.some(v=>v===null)) throw new Error('O arquivo deve incluir as cinco pontuações C1–C5.');
-  // A nota final sempre é calculada pela soma das cinco competências.
-  const score=comps.reduce((a,b)=>a+b,0);
-  const sourceAnnotations=Array.isArray(root.annotations)?root.annotations:[];
-  const annotations=sourceAnnotations.map((a,i)=>{
-    const competency=String(a.competency||a.comp||'').toUpperCase();
-    if(!COMP_SHORT.includes(competency)) throw new Error(`A marcação ${i+1} não contém uma competência C1–C5 válida.`);
-    let start=Number(a.start),end=Number(a.end);const quote=String(a.quote||'');
-    if(!Number.isInteger(start)||!Number.isInteger(end)||start<0||end<=start||textValue.slice(start,end)!==quote){
-      start=quote?textValue.indexOf(quote):-1;end=start>=0?start+quote.length:-1;
-    }
-    if(start<0||end<=start||textValue.slice(start,end)!==quote) throw new Error(`Não encontrei o trecho da marcação ${i+1} dentro do texto. Gere o arquivo com o trecho e os índices correspondentes.`);
-    return {id:String(a.id||`mark-${i+1}`),start,end,quote,competency,category:String(a.category||''),comment:String(a.comment||''),suggestion:String(a.suggestion||a.correction||'')};
-  }).sort((a,b)=>a.start-b.start);
-  for(let i=1;i<annotations.length;i++){if(annotations[i].start<annotations[i-1].end) throw new Error('Duas marcações se sobrepõem. Ajuste os trechos destacados no arquivo JSON.');}
-  const unlinkedComments=Array.isArray(root.unlinkedComments||root.additionalComments)?(root.unlinkedComments||root.additionalComments).map((x,i)=>{const obj=typeof x==='string'?{comment:x}:x||{};const comp=String(obj.competency||obj.comp||'').toUpperCase();return {id:String(obj.id||`extra-${i+1}`),competency:COMP_SHORT.includes(comp)?comp:'',category:String(obj.category||''),quote:String(obj.quote||''),comment:String(obj.comment||obj.text||'').trim(),suggestion:String(obj.suggestion||obj.correction||'').trim()};}).filter(x=>x.comment||x.quote):[];
-  const suppliedSummary=Array.isArray(root.errorSummary)?root.errorSummary.map((x,i)=>({competency:String(x.competency||'').toUpperCase(),mainError:String(x.mainError||x.error||''),count:Number(x.count||1),patterns:Array.isArray(x.patterns)?x.patterns.map(p=>({name:String(p.name||p.category||''),count:Number(p.count)||1})).filter(p=>p.name):[]})).filter(x=>COMP_SHORT.includes(x.competency)):[];
-  const errorComps=new Set(suppliedSummary.map(x=>x.competency));
-  if(COMP_SHORT.some(c=>!errorComps.has(c))) throw new Error('O arquivo precisa trazer um resumo de erro para cada competência C1–C5.');
-  const derivedSummary=buildErrorSummary({},annotations,unlinkedComments);
-  const errorSummary=COMP_SHORT.map(c=>{const supplied=suppliedSummary.find(x=>x.competency===c),derived=derivedSummary.find(x=>x.competency===c);if(derived&&derived.patterns&&derived.patterns.length)return {...derived};return {...supplied};});
-  const id=String(root.id||`${slug(theme)}-${root.date||new Date().toISOString().slice(0,10)}`);
-  const dateValue=/^\d{4}-\d{2}-\d{2}$/.test(String(root.date||''))?String(root.date):new Date().toISOString().slice(0,10);
-  const notes=String(root.overallFeedback||root.notes||'');
-  return {id,theme,date:dateValue,score,comps,notes,source:'json',text:textValue,annotations,unlinkedComments,errorSummary,
-    strengths:Array.isArray(root.strengths)?root.strengths.map(String):[], sourceFile:String(root.sourceReport||''), importFormat:'escrita.correction/v1'};
+function normalizeCorrection(raw,essayOverride=''){
+ const root=raw&&raw.correction&&typeof raw.correction==='object'?raw.correction:raw;
+ if(!root||typeof root!=='object')throw new Error('O conteúdo não contém um objeto de correção.');
+ const format=raw&&raw.format;if(format&&format!=='escrita.correction')throw new Error('Formato desconhecido. Esperava “escrita.correction”.');
+ const candidateText=String(essayOverride||'').trim();
+ const textFromRoot=String(root.text||root.essayText||root.essay||root.transcription||'');
+ const textValue=candidateText.length>=30?candidateText:textFromRoot;
+ if(textValue.trim().length<30)throw new Error('Não encontrei a redação integral. Cole o texto original no campo da redação.');
+ const theme=String(root.theme||root.topic||root.title||root.metadata?.theme||'').trim();
+ if(!theme)throw new Error('O tema da redação não foi identificado. Inclua o tema no espelho de correção.');
+ const competencySource=root.competencies||root.competencyScores||root.scores||{};
+ const comps=COMP_SHORT.map((key,i)=>{
+  let value=competencySource?.[key];if(value&&typeof value==='object')value=value.score??value.points??value.nota;
+  if(value===undefined||value===null)value=root[key]?.score??root[key]?.points??(Array.isArray(root.comps)?root.comps[i]:null);
+  const v=value===null||value===undefined||value===''?null:Number(value);
+  if(v!==null&&(!Number.isFinite(v)||!Number.isInteger(v)||v<0||v>200))throw new Error(`A pontuação ${key} precisa ser um número inteiro entre 0 e 200.`);
+  return v;
+ });
+ if(comps.some(v=>v===null))throw new Error('O espelho precisa incluir as cinco notas C1–C5, de 0 a 200.');
+ const score=comps.reduce((a,b)=>a+b,0);
+ const rawAnnotations=Array.isArray(root.annotations)?root.annotations:(Array.isArray(root.markings)?root.markings:(Array.isArray(root.highlights)?root.highlights:[]));
+ const unlinkedComments=[];
+ const makeExtra=(obj,i,defaultComp='')=>{
+  const x=typeof obj==='string'?{comment:obj}:obj||{};
+  const sourceQuote=String(x.quote||x.excerpt||x.segment||x.originalText||'').trim();
+  const comment=String(x.comment||x.explanation||x.feedback||x.observation||x.description||x.text||'').trim();
+  const comp=grafiaCompetencyFromText([x.competency,x.comp,x.category,comment,sourceQuote].filter(Boolean).join(' '),defaultComp);
+  const category=String(x.category||x.type||'').trim();
+  const isGeneral=/^(?:coment[aá]rio geral|avalia[cç][aã]o geral|feedback da compet[eê]ncia|an[aá]lise da compet[eê]ncia|parecer geral)$/i.test(category);
+  return {id:String(x.id||`extra-${i+1}`),competency:comp,category,quote:sourceQuote,comment:comment||(!sourceQuote?'':`Trecho citado no espelho: “${sourceQuote}”`),suggestion:String(x.suggestion||x.correction||x.correctedText||'').trim(),studySuggestion:String(x.studySuggestion||'').trim(),isGeneral};
+ };
+ // Keep quoted observations even when their source excerpt cannot be grifed exactly.
+ const annotationCandidates=[];
+ for(let i=0;i<rawAnnotations.length;i++){
+  const a=rawAnnotations[i]||{};
+  const category=String(a.category||a.type||a.label||'').trim();
+  const comment=String(a.comment||a.explanation||a.feedback||a.observation||a.description||'').trim();
+  const sourceQuote=String(a.quote||a.excerpt||a.segment||a.originalText||a.selectedText||'').trim();
+  const guessComp=grafiaCompetencyFromText([a.competency,a.comp,category,comment].filter(Boolean).join(' '),a.competency||a.comp||'');
+  const rawStart=Number(a.start),rawEnd=Number(a.end);
+  let span=null;
+  if(Number.isInteger(rawStart)&&Number.isInteger(rawEnd)&&rawStart>=0&&rawEnd>rawStart&&rawEnd<=textValue.length){
+   const sliced=textValue.slice(rawStart,rawEnd);
+   if(!sourceQuote||sliced===sourceQuote)span={start:rawStart,end:rawEnd,quote:sliced};
+  }
+  if(!span&&sourceQuote)span=grafiaLocateQuote(textValue,sourceQuote,Number.isFinite(rawStart)?rawStart:undefined);
+  if(!span&&(!sourceQuote||!sourceQuote.trim())&&Number.isInteger(rawStart)&&Number.isInteger(rawEnd)&&rawStart>=0&&rawEnd>rawStart&&rawEnd<=textValue.length){const q=textValue.slice(rawStart,rawEnd);if(q.trim())span={start:rawStart,end:rawEnd,quote:q};}
+  if(!guessComp||!span||!span.quote.trim()){
+   const extra=makeExtra({id:a.id,competency:guessComp,category,quote:sourceQuote,comment:comment||String(a.text||'').trim(),suggestion:a.suggestion||a.correction,studySuggestion:a.studySuggestion},i+1,guessComp);
+   if(extra.comment||extra.quote)unlinkedComments.push(extra);
+   continue;
+  }
+  annotationCandidates.push({id:String(a.id||`mark-${i+1}`),start:span.start,end:span.end,quote:span.quote,competency:guessComp,category,comment:comment||'Confira este trecho conforme a observação do espelho.',suggestion:String(a.suggestion||a.correction||a.correctedText||'').trim(),studySuggestion:String(a.studySuggestion||'').trim(),matchType:'structured'});
+ }
+ // Prefer the most precise non-overlapping marks. Conflicting observations become
+ // visible comments instead of causing the whole correction import to fail.
+ annotationCandidates.sort((a,b)=>(a.end-a.start)-(b.end-b.start)||a.start-b.start);
+ const annotations=[];
+ for(const a of annotationCandidates){
+  const exact=annotations.find(x=>x.start===a.start&&x.end===a.end&&x.competency===a.competency&&String(x.category||'')===String(a.category||''));
+  if(exact){if(a.comment&&a.comment!==exact.comment&&!exact.comment.includes(a.comment))exact.comment+='\n\n'+a.comment;if(a.suggestion&&!exact.suggestion)exact.suggestion=a.suggestion;if(a.studySuggestion&&!exact.studySuggestion)exact.studySuggestion=a.studySuggestion;continue;}
+  const conflict=annotations.find(x=>!x.linkedTo&&a.start<x.end&&a.end>x.start);
+  if(conflict){annotations.push({...a,linkedTo:conflict.id});continue;}
+  annotations.push(a);
+ }
+ annotations.sort((a,b)=>a.start-b.start);
+ const rawExtras=root.unlinkedComments||root.additionalComments||root.comments||root.observations||[];
+ if(Array.isArray(rawExtras))rawExtras.forEach((x,i)=>{const e=makeExtra(x,i+1);if(e.comment||e.quote)unlinkedComments.push(e);});
+ else if(typeof rawExtras==='string'&&rawExtras.trim())unlinkedComments.push(makeExtra({comment:rawExtras},unlinkedComments.length+1));
+ else if(rawExtras&&typeof rawExtras==='object'){
+  let counter=0;
+  for(const [key,value] of Object.entries(rawExtras)){
+   const comp=COMP_SHORT.includes(key.toUpperCase())?key.toUpperCase():'';
+   const items=Array.isArray(value)?value:[value];
+   for(const item of items){counter++;const entry=makeExtra(typeof item==='string'?{comment:item,competency:comp}: {...(item||{}),competency:(item&&item.competency)||comp},counter,comp);if(entry.comment||entry.quote)unlinkedComments.push(entry);}
+  }
+ }
+ // Carry per-competency narratives when an answer provides them separately from the annotations.
+ const perCompetency=root.competencyAnalysis||root.competencyFeedback||root.feedbackByCompetency;
+ if(perCompetency&&typeof perCompetency==='object'&&!Array.isArray(perCompetency)){
+  for(const comp of COMP_SHORT){const value=perCompetency[comp];const narrative=typeof value==='string'?value:String(value?.comment||value?.summary||value?.feedback||'').trim();if(narrative.trim().length<18)continue;
+   const normalized=narrative.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ');
+   const already=[...annotations,...unlinkedComments].some(x=>x.competency===comp&&String(x.comment||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').includes(normalized.slice(0,Math.min(85,normalized.length))));
+   if(!already)unlinkedComments.push({id:`competency-feedback-${comp}`,competency:comp,category:'Análise da competência',quote:'',comment:narrative,suggestion:'',studySuggestion:''});
+  }
+ }
+ // De-duplicate exact extras while preserving distinct observations.
+ const seenExtras=new Set(),extras=[];
+ for(const x of unlinkedComments){const key=[x.competency,x.category,x.quote,x.comment,x.suggestion,x.studySuggestion].map(v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim()).join('|');if(!key.replace(/\|/g,'' )||seenExtras.has(key))continue;seenExtras.add(key);extras.push(x);}
+ const suppliedSummary=Array.isArray(root.errorSummary)?root.errorSummary:Array.isArray(root.diagnosis)?root.diagnosis:[];
+ const derived=buildErrorSummary({},annotations,extras);
+ const errorSummary=COMP_SHORT.map(comp=>{
+  const source=suppliedSummary.map((x,i)=>x||{}).find(x=>String(x.competency||x.comp||'').toUpperCase()===comp)||{};
+  const base=derived.find(x=>x.competency===comp)||{competency:comp,mainError:'Confira os comentários desta competência.',count:0,patterns:[]};
+  const rawPatterns=Array.isArray(source.patterns)?source.patterns:(Array.isArray(source.errors)?source.errors:[]);
+  const merged=new Map();
+  for(const p of [...base.patterns,...rawPatterns]){const name=String(p.name||p.category||p.label||p.mainError||'').trim();if(!name)continue;const key=name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();const prev=merged.get(key);merged.set(key,{name:prev?.name||name,count:Math.max(Number(prev?.count)||0,Number(p.count)||1)});}
+  const patterns=[...merged.values()].sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name,'pt-BR'));
+  const suppliedMain=String(source.mainError||source.error||source.summary||'').trim();
+  const genericMain=/^(?:aspecto principal|principal erro|erro principal|padr[aã]o n[aã]o especificado)$/i.test(suppliedMain);
+  const mainError=!genericMain&&suppliedMain?suppliedMain:(patterns[0]?.name||base.mainError);
+  const count=Math.max(0,Number(source.count)||0,Number(base.count)||0,patterns.reduce((n,x)=>n+x.count,0));
+  return {competency:comp,mainError,count,patterns,study:String(source.study||''),practice:String(source.practice||'')};
+ });
+ const dateValue=/^\d{4}-\d{2}-\d{2}$/.test(String(root.date||''))?String(root.date):new Date().toISOString().slice(0,10);
+ const notes=String(root.overallFeedback||root.notes||root.summary||root.generalFeedback||root.feedback||'').trim();
+ const strengths=Array.isArray(root.strengths)?root.strengths.map(x=>typeof x==='string'?x:String(x?.text||x?.description||'')).filter(Boolean):[];
+ const sourceFile=String(root.sourceReport||root.sourceFile||'');
+ return {id:String(root.id||`${slug(theme)}-${dateValue}`),theme,date:dateValue,score,comps,notes,source:'json',text:textValue,annotations,unlinkedComments:extras,errorSummary,strengths,sourceFile,importFormat:'escrita.correction/v1'};
 }
 function slug(s){return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,55)||'redacao';}
+function grafiaNormalizeMapped(value){
+ const source=String(value||'');let out='',map=[],lastSpace=false;
+ for(let i=0;i<source.length;){const cp=source.codePointAt(i),ch=String.fromCodePoint(cp),width=ch.length;let part=ch.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR');
+  for(const c of part){if(/\s/.test(c)){if(!lastSpace){out+=' ';map.push(i);}lastSpace=true;}else{out+=c;map.push(i);lastSpace=false;}}
+  i+=width;
+ }
+ const left=out.length-out.trimStart().length,right=out.trimEnd().length;return {out:out.slice(left,right),map:map.slice(left,right)};
+}
+function grafiaLocateQuote(text,quote,hint){
+ const source=String(text||''),raw=String(quote||'');if(!raw.trim())return null;
+ const candidates=[];const add=(start,end,method)=>{if(start>=0&&end>start&&end<=source.length&&!candidates.some(x=>x.start===start&&x.end===end))candidates.push({start,end,method});};
+ const exactNeedles=[raw,raw.trim()].filter((x,i,a)=>x&&a.indexOf(x)===i);
+ for(const needle of exactNeedles){let at=source.indexOf(needle);while(at>=0){add(at,at+needle.length,'exact');at=source.indexOf(needle,at+Math.max(1,needle.length));}}
+ const mapped=grafiaNormalizeMapped(source),needle=grafiaNormalizeMapped(raw).out;
+ if(needle.length>=3){let at=mapped.out.indexOf(needle);while(at>=0){const start=mapped.map[at],last=mapped.map[at+needle.length-1];if(start!==undefined&&last!==undefined){let end=last+1;if(end<source.length&&/[\uD800-\uDBFF]/.test(source[end-1])&&/[\uDC00-\uDFFF]/.test(source[end]))end++;add(start,end,'normalized');}at=mapped.out.indexOf(needle,at+Math.max(1,needle.length));}}
+ if(!candidates.length)return null;
+ const hintNum=Number(hint);candidates.sort((a,b)=>{
+  if(Number.isFinite(hintNum)){const da=Math.abs(a.start-hintNum),db=Math.abs(b.start-hintNum);if(da!==db)return da-db;}
+  if(a.method!==b.method)return a.method==='exact'?-1:1;return a.start-b.start;
+ });
+ const best=candidates[0];return {...best,quote:source.slice(best.start,best.end)};
+}
+function grafiaCompetencyFromText(value,fallback=''){
+ const t=String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+ const explicit=t.match(/(?:competencia\s*(?:([1-5])|([iv]{1,3}|iv|v))|\bc\s*([1-5])\b)/i);
+ if(explicit){if(explicit[1])return 'C'+explicit[1];if(explicit[2]){const r=['I','II','III','IV','V'].indexOf(explicit[2].toUpperCase());if(r>=0)return 'C'+(r+1);}if(explicit[3])return 'C'+explicit[3];}
+ if(/intervencao|agente da intervencao|meio de execucao|finalidade da intervencao/.test(t))return 'C5';
+ if(/repertorio|aderencia ao tema|fuga ao tema|tangenciamento/.test(t))return 'C2';
+ if(/coesao|conectivo|conector|retomada pronominal/.test(t))return 'C4';
+ if(/argumentacao|tese|projeto de texto|progressao argumentativa/.test(t))return 'C3';
+ if(/ortografia|acentuacao|pontuacao|concordancia|regencia|sintaxe|norma padrao/.test(t))return 'C1';
+ return COMP_SHORT.includes(String(fallback||'').toUpperCase())?String(fallback).toUpperCase():'';
+}
 function previewCorrections(rows,fileName){
   pendingImport={rows,fileName};
-  const summaries=rows.map((e,i)=>`<div style="border:1px solid var(--line);border-radius:15px;padding:13px;background:var(--field);margin-bottom:9px"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px"><div><div style="font-weight:750;font-size:12px">${esc(e.theme)}</div><div style="color:var(--muted);font-size:10px;margin-top:4px">${esc(fmtDate(e.date))} · ${e.annotations.length} marcações · texto integral incluído</div></div><div style="font-size:20px;font-weight:800;color:var(--accent)">${e.score}<small style="font-size:9px;color:var(--muted)">/1000</small></div></div><div class="reader-stats">${e.comps.map((v,j)=>`<div class="reader-stat"><small>${COMP_SHORT[j]}</small><strong style="color:${['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--c5)'][j]}">${v}</strong></div>`).join('')}</div><div style="font-size:10px;color:var(--muted)">5 resumos por competência · ${e.errorSummary.length} entradas de diagnóstico${i===0&&rows.length>1?'':' '}</div></div>`).join('');
+  const summaries=rows.map((e,i)=>`<div style="border:1px solid var(--line);border-radius:15px;padding:13px;background:var(--field);margin-bottom:9px"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px"><div><div style="font-weight:750;font-size:12px">${esc(e.theme)}</div><div style="color:var(--muted);font-size:10px;margin-top:4px">${esc(fmtDate(e.date))} · ${e.annotations.filter(a=>!a.linkedTo).length} grifos · ${e.annotations.length} observações ligadas ao texto · texto integral incluído</div></div><div style="font-size:20px;font-weight:800;color:var(--accent)">${e.score}<small style="font-size:9px;color:var(--muted)">/1000</small></div></div><div class="reader-stats">${e.comps.map((v,j)=>`<div class="reader-stat"><small>${COMP_SHORT[j]}</small><strong style="color:${['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--c5)'][j]}">${v}</strong></div>`).join('')}</div><div style="font-size:10px;color:var(--muted)">5 resumos por competência · ${e.errorSummary.length} entradas de diagnóstico${i===0&&rows.length>1?'':' '}</div></div>`).join('');
   $('importResult').innerHTML=`<article class="panel glass"><div class="panel-head"><div><div class="panel-title">Prévia do arquivo estruturado</div><div class="panel-description">${esc(fileName)} · ${rows.length} correção(ões) validada(s)</div></div><span class="pill"><span class="pill-dot"></span>Formato válido</span></div><div class="parse-alert ok">O site reconheceu o esquema, calculou a nota pela soma de C1–C5, identificou o texto original e preparou as marcações. Confira antes de salvar.</div>${summaries}<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="primary-btn" id="confirmStructured">Salvar ${rows.length===1?'correção':'correções'} no histórico</button><button class="secondary-btn" id="peekJson">Ver conteúdo JSON</button><button class="secondary-btn" id="discardStructured">Cancelar</button></div><pre id="jsonPeek" class="code-preview" style="display:none"></pre></article>`;
   $('confirmStructured').addEventListener('click',saveStructuredImport);
-  $('peekJson').addEventListener('click',()=>{const el=$('jsonPeek');el.style.display=el.style.display==='none'?'block':'none';if(el.style.display==='block')el.textContent=JSON.stringify({format:'escrita.correction',version:1,correction:rows[0]},null,2).slice(0,15000);});
+  $('peekJson').addEventListener('click',()=>{const el=$('jsonPeek');el.style.display=el.style.display==='none'?'block':'none';if(el.style.display==='block')el.textContent=JSON.stringify({format:'escrita.correction',version:1,correction:rows[0]},null,2).slice(0,100000);});
   $('discardStructured').addEventListener('click',()=>{$('importResult').innerHTML='';pendingImport=null;});
 }
 function saveStructuredImport(){
@@ -556,72 +777,96 @@ function saveStructuredImport(){
 async function handleCorrectionFile(file){if(!file)return;if(!/\.json$/i.test(file.name)&&file.type!=='application/json'&&file.type!=='text/json'){toast('Formato não aceito','Selecione o arquivo .json que acompanha a correção, não o PDF.');return;}setView('import');$('importResult').innerHTML=`<article class="panel glass"><div class="panel-title">Validando ${esc(file.name)}</div><div class="panel-description" style="margin-top:7px">Lendo os campos estruturados e verificando as marcações do texto…</div></article>`;try{const raw=JSON.parse(await file.text());const arr=Array.isArray(raw)?raw:(Array.isArray(raw.corrections)?raw.corrections:null);const rows=(arr||[raw]).map(r=>normalizeCorrection(r));previewCorrections(rows,file.name);}catch(err){$('importResult').innerHTML=`<article class="panel glass"><div class="parse-alert warn"><strong>Não foi possível importar o arquivo.</strong><br>${esc(err.message||'JSON inválido.')}</div><div class="panel-description">Importe o arquivo estruturado que acompanha a correção. O site não tentará extrair dados do PDF.</div><button class="secondary-btn" id="retryImport">Escolher outro arquivo</button></article>`;$('retryImport').addEventListener('click',()=>$('correctionInput').click());}}
 
 function grafiaExtractJson(source){
- const rawText=String(source||'').trim(); if(!rawText)return null;
- const candidates=[rawText.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim()];
- const match=rawText.match(/```json\s*([\s\S]*?)```/i);if(match)candidates.unshift(match[1].trim());
- const first=rawText.indexOf('{'),last=rawText.lastIndexOf('}');if(first>=0&&last>first)candidates.push(rawText.slice(first,last+1));
- for(const candidate of candidates){try{return JSON.parse(candidate)}catch(e){}}
+ const rawText=String(source||'').trim();if(!rawText)return null;
+ const candidates=[],push=c=>{const v=String(c||'').trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();if(v&&!candidates.includes(v))candidates.push(v);};
+ push(rawText);
+ for(const m of rawText.matchAll(/```(?:json|javascript|js)?\s*([\s\S]*?)```/gi))push(m[1]);
+ // Scan balanced object/array boundaries so explanatory prose before or after the
+ // payload, escaped quotes and nested objects do not break extraction.
+ for(let i=0;i<rawText.length;i++){
+  if(rawText[i]!=='{'&&rawText[i]!=='[')continue;
+  const first=i,stack=[rawText[i]==='{'?'}':']'];let inString=false,escaped=false;
+  for(let j=i+1;j<rawText.length;j++){
+   const c=rawText[j];
+   if(inString){if(escaped)escaped=false;else if(c==='\\')escaped=true;else if(c==='"')inString=false;continue;}
+   if(c==='"'){inString=true;continue;}
+   if(c==='{' )stack.push('}');else if(c==='[')stack.push(']');
+   else if(c==='}'||c===']'){if(stack[stack.length-1]===c)stack.pop();else break;if(!stack.length){push(rawText.slice(first,j+1));break;}}
+  }
+ }
+ for(const candidate of candidates){try{
+  const value=JSON.parse(candidate);
+  const useful=x=>!!(x&&((typeof x==='object'&&(Array.isArray(x.corrections)||x.correction&&typeof x.correction==='object'||x.theme&&(x.competencies||x.comps||x.C1)))||(Array.isArray(x)&&x.length>0&&x.every(y=>y&&typeof y==='object'&&(y.correction||y.theme||y.competencies||y.comps)))));
+  if(useful(value))return value;
+ }catch(e){}}
  return null;
 }
-function grafiaFindScore(text, key){
+function grafiaFindScore(text,key){
  const t=String(text||'');
  if(key==='total'){
-  const patterns=[/(?:nota\s*(?:final|total|estimada)?|pontua[cç][aã]o\s*total|score)\s*[:=\-]?\s*(\d{3,4})\s*(?:\/\s*1000)?/i,/(\d{3,4})\s*\/\s*1000/i];
-  for(const re of patterns){const m=t.match(re);if(m){const n=Number(m[1]);if(n>=0&&n<=1000)return n;}}
-  return null;
+  const totalPatterns=[/(?:nota\s*(?:final|total|estimada)?|pontua[cç][aã]o\s*total|score)\s*[:=—–-]?\s*(\d{3,4})\s*(?:\/\s*1000)?/i,/(\d{3,4})\s*\/\s*1000\b/i];
+  for(const re of totalPatterns){const m=re.exec(t);if(m){const n=Number(m[1]);if(n>=0&&n<=1000)return n;}}return null;
  }
- const n=Number(String(key).replace(/\D/g,'')), roman=['','I','II','III','IV','V'][n];
- const headingRe=new RegExp('(?:compet[eê]ncia\\s*(?:'+n+'|'+roman+')|\\bC'+n+'\\b)','i');
- const hm=headingRe.exec(t);let section=t;
- if(hm){
-  const lineStart=t.lastIndexOf('\n',hm.index)+1,lineEndRaw=t.indexOf('\n',hm.index),lineEnd=lineEndRaw<0?t.length:lineEndRaw;
-  const line=t.slice(lineStart,lineEnd);
-  const headScore=line.match(new RegExp('(?:compet[eê]ncia\\s*(?:'+n+'|'+roman+')|\\bC'+n+'\\b)[^\\d]{0,45}(\\d{1,3})(?:\\s*\\/\\s*200|\\s*pontos?)?','i'));
-  if(headScore){const v=Number(headScore[1]);if(v>=0&&v<=200)return v;}
-  const after=t.slice(hm.index+hm[0].length);const next=after.search(/(?:compet[eê]ncia\s*(?:[1-5]|I{1,3}|IV|V)\b|\bC[1-5]\b)/i);section=next>=0?after.slice(0,next):after;
- }
- const patterns=[
-  /(?:nota|pontua[cç][aã]o|pontuou|recebeu|obteve|score)\s*(?:da\s*compet[eê]ncia)?\s*[:=\-]?\s*(\d{1,3})\s*(?:\/\s*200|pontos?\b)/i,
-  /(?:nota\s*[:\-]?\s*|[:—–-]\s*)(\d{1,3})\s*(?:\/\s*200|pontos?\b)/i,
-  /(?:^|\n)\s*(?:nota\s*[:\-]?\s*)?(\d{1,3})\s*\/\s*200\b/i,
-  /(?:^|\n)\s*(\d{1,3})\s*(?:pontos?)\s*(?:de\s*200)?\s*(?:$|\n)/i,
-  /(?:^|\n)\s*[—–:\-]?\s*(\d{1,3})\s*\/\s*200\b/i,
-  /(?:^|\n)\s*(?:C[1-5]|compet[eê]ncia\s*(?:[1-5]|I{1,3}|IV|V))\s*[—–:\-]?\s*(\d{1,3})\s*(?:\/\s*200|pontos?)?/i
- ];
+ const n=Number(String(key).replace(/\D/g,''));if(!(n>=1&&n<=5))return null;
+ const roman=['','I','II','III','IV','V'][n];
+ const headerLine=(t.split(/\r?\n/).map(x=>x.trim()).find(line=>new RegExp('^(?:[#>*•\\s|_-]*)(?:compet[eê]ncia\\s*(?:n[º°.]?\\s*)?(?:'+n+'|'+roman+')|C\\s*'+n+'\\b)','i').test(line))||'');
  const candidates=[];
- for(let i=0;i<patterns.length;i++){const m=patterns[i].exec(section);if(m){const v=Number(m[1]);if(Number.isFinite(v)&&v>=0&&v<=200)candidates.push({v,priority:i===0?3:(i===1||i===3?2:1)});}}
+ const add=(v,priority,at=0)=>{v=Number(v);if(Number.isFinite(v)&&Number.isInteger(v)&&v>=0&&v<=200)candidates.push({v,priority,at});};
+ const lines=t.split(/\r?\n/).slice(0,4).join('\n');
+ // Explicit score labels in the competency block take precedence over incidental numbers.
+ const explicit=[
+  /(?:nota|pontua[cç][aã]o|pontuou|recebeu|obteve|score)\s*(?:da\s*)?(?:compet[eê]ncia\s*(?:[1-5]|I{1,3}|IV|V)\s*)?[:=—–-]?\s*(\d{1,3})\s*(?:\/\s*200\b|pontos?\b)/ig,
+  /(?:compet[eê]ncia\s*(?:[1-5]|I{1,3}|IV|V)|\bC[1-5]\b)[^\n]{0,90}?\b(\d{1,3})\s*\/\s*200\b/ig,
+  /\b(\d{1,3})\s*\/\s*200\b/ig,
+  /(?:nota|pontua[cç][aã]o)\s*[:=—–-]\s*(\d{1,3})\b/ig,
+  /\b(\d{1,3})\s*(?:pontos?)(?:\s+(?:de|em)\s*200)?\b/ig
+ ];
+ explicit.forEach((re,idx)=>{let m;while((m=re.exec(t))){let priority=10-idx;if(idx===2){const around=t.slice(Math.max(0,m.index-80),Math.min(t.length,m.index+30));if(/nota\s*(?:total|final)|\/\s*1000/i.test(around))priority-=7;}add(m[1],priority,m.index);}});
+ // Common concise formats: "C1 — 120", "Competência I: 160", or a standalone score near the heading.
+ const headerTests=[
+  new RegExp('(?:compet[eê]ncia\\s*(?:n[º°.]?\\s*)?(?:'+n+'|'+roman+')|\\bC\\s*'+n+'\\b)[^\\n]{0,80}?[:=—–-]?\\s*(\\d{1,3})(?!\\d)(?:\\s*\/\\s*200)?','i'),
+  new RegExp('(?:^|\\n)\\s*(\\d{1,3})\\s*(?:pontos?\\s*(?:de|\/)\\s*200)?\\s*(?=\\n|$)','i')
+ ];
+ for(let i=0;i<headerTests.length;i++){const m=headerTests[i].exec(i===0?headerLine:t);if(m)add(m[1],i===0?7:1,m.index||0);}
+ // Check the first several lines only for a bare score, never the full narrative.
+ const bareRe=/(?:^|\n)\s*(\d{1,3})\s*(?:\/\s*200)?\s*(?=\n|$)/g;let bm;
+ while((bm=bareRe.exec(lines)))add(bm[1],0,bm.index);
  if(!candidates.length)return null;
- candidates.sort((a,b)=>b.priority-a.priority);
- // Valores válidos mais comuns são múltiplos de 40; notas de médias entre corretores podem variar.
- return candidates.find(x=>x.v%40===0)?.v ?? candidates.find(x=>x.v%20===0)?.v ?? candidates[0].v;
+ candidates.sort((a,b)=>b.priority-a.priority||(a.at||0)-(b.at||0));
+ // Prefer a 40-point level, then a common 20-point average only when evidence ties.
+ const topPriority=candidates[0].priority,top=candidates.filter(x=>x.priority===topPriority);
+ return top.find(x=>x.v%40===0)?.v??top.find(x=>x.v%20===0)?.v??top[0].v;
 }
 function grafiaParseRubric(text){
  const source=String(text||'');
- const roman=['I','II','III','IV','V'];
  const names=['Norma padrão','Compreensão do tema','Argumentação','Coesão','Proposta de intervenção'];
- const comps={};
- const headingRe=/(?:^|\n)\s*(?:compet[eê]ncia\s*(?:[1-5]|I{1,3}|IV|V)|C[1-5])\b[^\n]*/gim;
- const headings=[];let hm;
- while((hm=headingRe.exec(source))){
-  const raw=hm[0].trim();let numMatch=raw.match(/compet[eê]ncia\s*([1-5]|I{1,3}|IV|V)/i);let n;
-  if(numMatch){const token=numMatch[1].toUpperCase();n=/^\d$/.test(token)?Number(token):roman.indexOf(token)+1;}
-  else {const cm=raw.match(/\bC([1-5])\b/i);n=cm?Number(cm[1]):null;}
-  if(n>=1&&n<=5)headings.push({n,start:hm.index,raw});
+ const roman=['I','II','III','IV','V'],headings=[];
+ const lines=source.split(/\r?\n/);let offset=0;
+ function parseHeader(line){
+  let v=String(line||'').trim().replace(/^\|+/,'').replace(/\|+$/,'').trim();
+  v=v.replace(/^(?:#{1,6}\s*|>\s*|[-*•]\s*)/,'').replace(/^\*{1,2}/,'').trim();
+  let m=v.match(/^(?:\*{0,2}\s*)?compet[eê]ncia\s*(?:n[º°.]?\s*)?([1-5]|I{1,3}|IV|V)\b/i);
+  if(m){const token=m[1].toUpperCase();return {n:/^\d$/.test(token)?Number(token):roman.indexOf(token)+1,raw:v};}
+  m=v.match(/^(?:\*{0,2}\s*)?C\s*([1-5])\b/i);if(m)return {n:Number(m[1]),raw:v};
+  m=v.match(/^([1-5])\s*[ªaº°]?\s+compet[eê]ncia\b/i);if(m)return {n:Number(m[1]),raw:v};
+  return null;
  }
+ for(const line of lines){const h=parseHeader(line);if(h&&h.n>=1&&h.n<=5)headings.push({n:h.n,start:offset,raw:h.raw,line});offset+=line.length+1;}
+ const comps={};
  for(let i=1;i<=5;i++){
-  let entry=headings.find(x=>x.n===i),section='';
-  if(entry){const next=headings.find(x=>x.start>entry.start);section=source.slice(entry.start,next?next.start:source.length).trim();}
+  const matches=headings.filter(h=>h.n===i);let section='';
+  if(matches.length){const entry=matches[0],next=headings.find(h=>h.start>entry.start);section=source.slice(entry.start,next?next.start:source.length).trim();}
   else{
-   // Fallback para correções em que os cabeçalhos aparecem sem quebra de linha.
-   const h=new RegExp('(?:compet[eê]ncia\\s*(?:'+i+'|'+roman[i-1]+')|\\bC'+i+'\\b)[^\\n]*','i').exec(source);
-   if(h){const rest=source.slice(h.index);const next=new RegExp('(?:compet[eê]ncia\\s*(?:[1-5]|I{1,3}|IV|V)|\\bC[1-5]\\b)','i');const tail=rest.slice(h[0].length),nm=next.exec(tail);section=h[0]+'\n'+(nm?tail.slice(0,nm.index):tail);}
+   // Inline fallback for headings embedded after a table separator or on the same line.
+   const inline=new RegExp('(?:compet[eê]ncia\\s*(?:n[º°.]?\\s*)?(?:'+i+'|'+roman[i-1]+')|(?:^|[|\\s])C\\s*'+i+'\\b)[^\\n]*','i').exec(source);
+   if(inline){const startAt=inline.index,rest=source.slice(startAt);const re=/(?:^|\n)\s*(?:#{1,6}\s*)?(?:compet[eê]ncia\s*(?:n[º°.]?\s*)?(?:[1-5]|I{1,3}|IV|V)|C\s*[1-5])\b/i;const tail=rest.slice(inline[0].length),next=re.exec(tail);section=(inline[0]+'\n'+(next?tail.slice(0,next.index):tail)).trim();}
   }
   const score=section?grafiaFindScore(section,'C'+i):null;
   const body=section.includes('\n')?section.slice(section.indexOf('\n')+1):section;
-  const clean=body.split(/\n\s*(?:###\s*|\*\*?Justificativa da nota|Parecer Final|Prioridades de melhoria)/i)[0].trim();
-  const lines=clean.split(/\n+/).map(x=>x.replace(/^\s*(?:[*•>-]+|\d+\.)\s*/,'').trim()).filter(x=>x.length>8&&!/^\|?\s*(?:compet[eê]ncia|[-|]+)\s*$/i.test(x));
-  const main=lines.find(x=>!/^A redação demonstra|^A redação compreende|^A redação possui|^A redação apresenta/i.test(x))||lines[0]||'';
-  comps['C'+i]={score,section:clean,summary:main.slice(0,1000),name:names[i-1]};
+  const clean=body.split(/\n\s*(?:#{1,4}\s*)?(?:\*{0,2})(?:Justificativa da nota|Parecer Final|Parecer geral|Prioridades? de melhoria|Pontos fortes|Aspectos positivos)\b/i)[0].trim();
+  const linesClean=clean.split(/\n+/).map(x=>x.replace(/^\s*(?:[*•>-]+|\d+[.)]\s*)/,'').trim()).filter(x=>x.length>8&&!/^\|?\s*(?:compet[eê]ncia|[-|]+)\s*$/i.test(x));
+  const main=linesClean.find(x=>!/^a reda[cç][aã]o (?:demonstra|compreende|possui|apresenta|evidencia|evidencia)/i.test(x))||linesClean[0]||'';
+  comps['C'+i]={score,section:clean||body.trim(),summary:main.slice(0,1000),name:names[i-1]};
  }
  return comps;
 }
@@ -642,13 +887,13 @@ function grafiaBuildAnnotations(essay, rubric){
  }
  const essayNorm=normalizedWithMap(text);
  function overlaps(start,end){return used.some(u=>start<u.end&&end>u.start);}
- function locate(quote){
+ function locate(quote,allowOverlap=false){
   const q=String(quote||'').trim();if(q.length<4)return null;
   let from=0,at;
-  while((at=text.indexOf(q,from))>=0){const end=at+q.length;if(!overlaps(at,end))return {start:at,end};from=at+Math.max(1,q.length);}
+  while((at=text.indexOf(q,from))>=0){const end=at+q.length;if(allowOverlap||!overlaps(at,end))return {start:at,end};from=at+Math.max(1,q.length);}
   const needle=norm(q).trim();if(needle.length<4)return null;
   from=0;
-  while((at=essayNorm.out.indexOf(needle,from))>=0){const last=at+needle.length-1,start=essayNorm.map[at],end=(essayNorm.map[last]??start)+1;if(!overlaps(start,end))return {start,end};from=at+Math.max(1,needle.length);}
+  while((at=essayNorm.out.indexOf(needle,from))>=0){const last=at+needle.length-1,start=essayNorm.map[at],end=(essayNorm.map[last]??start)+1;if(allowOverlap||!overlaps(start,end))return {start,end};from=at+Math.max(1,needle.length);}
   return null;
  }
  const categoryRules=[
@@ -685,15 +930,22 @@ function grafiaBuildAnnotations(essay, rubric){
   const cleanedCategory=genericLabels.test(cat)?'':cat;
   const key=norm(comp+'|'+cleanedCategory+'|'+q+'|'+c+'|'+sugg).replace(/\s+/g,' ');
   if(unlinkedComments.some(x=>x._key===key))return;
-  unlinkedComments.push({id:'extra-'+comp+'-'+unlinkedComments.length,competency:comp,category:cleanedCategory,quote:q,comment:c,suggestion:sugg,_key:key});
+  const isGeneral=/^(?:coment[aá]rio geral|avalia[cç][aã]o geral|feedback da compet[eê]ncia|an[aá]lise da compet[eê]ncia|parecer geral)$/i.test(cat);
+  unlinkedComments.push({id:'extra-'+comp+'-'+unlinkedComments.length,competency:comp,category:cleanedCategory,quote:q,comment:c,suggestion:sugg,isGeneral,_key:key});
  }
  function addAnnotation(comp,span,category,comment,kind='Trecho relacionado ao comentário',suggestion=''){ 
   if(!span||span.end<=span.start){addUnlinked(comp,category,'',comment,suggestion);return false;}
   const actual=text.slice(span.start,span.end);
   if(actual.trim().length<4){addUnlinked(comp,category,actual,comment,suggestion);return false;}
-  if(overlaps(span.start,span.end)){addUnlinked(comp,category,actual,comment,suggestion);return false;}
   const cat=String(category||'').trim();
-  annotations.push({id:'auto-'+comp+'-'+annotations.length,competency:comp,category:genericLabels.test(cat)?'':cat,quote:actual,start:span.start,end:span.end,comment:String(comment||'').trim(),suggestion:String(suggestion||'').trim(),matchType:kind});
+  const conflict=used.find(u=>span.start<u.end&&span.end>u.start);
+  const markId='auto-'+comp+'-'+annotations.length;
+  if(conflict){
+   const parent=annotations.find(a=>a.start===conflict.start&&a.end===conflict.end)||annotations.find(a=>span.start<a.end&&span.end>a.start&&!a.linkedTo);
+   annotations.push({id:markId,linkedTo:parent?.id||'',competency:comp,category:genericLabels.test(cat)?'':cat,quote:actual,start:span.start,end:span.end,comment:String(comment||'').trim(),suggestion:String(suggestion||'').trim(),matchType:kind});
+   return true;
+  }
+  annotations.push({id:markId,competency:comp,category:genericLabels.test(cat)?'':cat,quote:actual,start:span.start,end:span.end,comment:String(comment||'').trim(),suggestion:String(suggestion||'').trim(),matchType:kind});
   used.push({start:span.start,end:span.end});return true;
  }
  function stripSectionNoise(s){
@@ -705,6 +957,8 @@ function grafiaBuildAnnotations(essay, rubric){
  }
  function addNarrativeComments(comp,segment){
   let s=String(segment||'').trim();if(!s)return;
+  const explicitGeneral=s.match(/^\s*(?:coment[aá]rio geral|avalia[cç][aã]o geral|feedback da compet[eê]ncia|parecer geral)\s*[:—–-]\s*([\s\S]+)$/i);
+  if(explicitGeneral){addUnlinked(comp,'Comentário geral','',explicitGeneral[1].trim());return;}
   const generalRe=/(?:coment[aá]rio\s+geral|avalia[cç][aã]o\s+geral|feedback\s+da\s+compet[eê]ncia)\s*[:—–-]?\s*([\s\S]*?)(?=\n?\s*(?:principais\s+erros|trecho\s+original|erros\s+encontrados|tabela\s+de\s+erros)|$)/i;
   const gm=generalRe.exec(s);
   if(gm&&gm[1].trim()){
@@ -716,10 +970,19 @@ function grafiaBuildAnnotations(essay, rubric){
   // Linhas soltas que não são títulos nem tabela são observações legítimas do espelho.
   const parts=s.split(/\n\s*\n|(?<=\.)\s{2,}/).map(x=>x.replace(/^[\s|\t>*#\-]+|[\s|\t]+$/g,'').trim()).filter(x=>x.length>18);
   for(let part of parts){
-   if(/[“"][^”"]{3,}[”"]/.test(part))continue;
    if(/^(?:nota|pontua[cç][aã]o|compet[eê]ncia|C[1-5]|principais erros|trecho original|corre[cç][aã]o|tipo de desvio)\b/i.test(part))continue;
    if(/^[|\-\s:]+$/.test(part))continue;
    part=part.replace(/^(?:coment[aá]rio geral|coment[aá]rio do corretor|parecer)\s*[:—–-]?\s*/i,'').trim();
+   const quoted=[...part.matchAll(/[“"]([^”"\n]{4,260})[”"]/g)];
+   if(quoted.length){
+    const narrative=part.replace(/[“"][^”"\n]{4,260}[”"]/g,' ').replace(/\s+/g,' ').trim();
+    const category=categoryFrom(narrative+' '+part);
+    let linked=false;
+    for(const q of quoted){const span=locate(q[1].trim());if(span){if(addAnnotation(comp,span,category,narrative||part,'Trecho citado'))linked=true;} }
+    if(!linked)addUnlinked(comp,category,quoted.map(q=>q[1].trim()).join(' · '),part);
+    else if(narrative.length>18)addUnlinked(comp,category,'',narrative);
+    continue;
+   }
    if(part.length>18)addUnlinked(comp,categoryFrom(part),'',part);
   }
  }
@@ -738,8 +1001,8 @@ function grafiaBuildAnnotations(essay, rubric){
   }else{
    const clean=String(raw||'').trim(),lines=clean.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),first=lines[0]||'';
    const firstCategory=categoryFrom(first);
-   const prefix=first.match(/^(Reg[eê]ncia verbal|Concord[aâ]ncia verbal|Concord[aâ]ncia nominal|Pontua[cç][aã]o|Ortografia(?: e acentua[cç][aã]o)?|Constru[cç][aã]o sint[aá]tica|Coes[aã]o textual|Repert[oó]rio sociocultural|Argumenta[cç][aã]o|Proposta de interven[cç][aã]o|V[ií]rgula entre sujeito e verbo)\s*(?:[:—–-]\s*|\s{2,})([\s\S]*)$/i);
-   if(prefix){category=categoryFrom(prefix[1]);comment=prefix[2].trim();}
+   const prefix=first.match(/^(Reg[eê]ncia verbal|Concord[aâ]ncia verbal|Concord[aâ]ncia nominal|Pontua[cç][aã]o|Ortografia(?: e acentua[cç][aã]o)?|Constru[cç][aã]o sint[aá]tica|Coes[aã]o textual|Repert[oó]rio sociocultural|Argumenta[cç][aã]o|Proposta de interven[cç][aã]o|V[ií]rgula entre sujeito e verbo|Repert[oó]rio|Desenvolvimento argumentativo|Proposta de interven[cç][aã]o)\s*(?::|—|–|-)??\s*(?:\s+)?([\s\S]*)$/i);
+   if(prefix){category=categoryFrom(prefix[1]);comment=prefix[2].trim()||lines.slice(1).join('\n').trim();}
    else if(lines.length>1&&first&&firstCategory&&norm(first).length<95){category=firstCategory;comment=lines.slice(1).join('\n').trim();}
    else{category=firstCategory;comment=clean;}
   }
@@ -759,11 +1022,23 @@ function grafiaBuildAnnotations(essay, rubric){
    };
    const saveRow=(line,quoteMatches)=>{
     const fields=line.trim().replace(/^\s*\|/,'').replace(/\|\s*$/,'').split(/[|\t]/).map(x=>x.trim()).filter(Boolean);
-    const original=quoteMatches[0][1].trim();
-    const suggestion=quoteMatches.length>1?quoteMatches[1][1].trim():'';
+    const originalMatch=quoteMatches.find(qm=>grafiaLocateQuote(text,String(qm[1]||'').trim()));
+    const original=(originalMatch||quoteMatches[0])[1].trim();
     let category='',categoryIndex=-1,categoryField='';
     for(let j=0;j<fields.length;j++){const candidate=categoryFieldIsLabel(fields[j]);if(candidate){category=candidate;categoryIndex=j;categoryField=fields[j];break;}}
     if(!category)category=categoryFrom(line);
+    let suggestion='';
+    const beforeCategory=fields.slice(0,categoryIndex>=0?categoryIndex:fields.length);
+    for(let j=0;j<beforeCategory.length;j++){
+     const field=beforeCategory[j];
+     if(grafiaLocateQuote(text,String(field||'').replace(/[“"]([^”"]+)[”"]/g,' ').trim()))continue;
+     if(/corre[cç][aã]o|forma\s+(?:correta|adequada|sugerida)|sugest[aã]o/i.test(field)){const sm=field.match(/[“"]([^”"]{4,180})[”"]/);if(sm&&String(sm[1]).trim()!==original){suggestion=String(sm[1]).trim();break;}}
+    }
+    if(!suggestion&&categoryIndex>1){
+     const correctionField=beforeCategory[1]||'';
+     const sm=correctionField.match(/[“"]([^”"]{4,180})[”"]/);
+     if(sm&&String(sm[1]).trim()!==original)suggestion=String(sm[1]).trim();
+    }
     let comment='';
     if(categoryIndex>=0){
      const sameField=categoryField.slice(category.length).replace(/^\s*[:—–-]\s*/,'').trim();
@@ -806,29 +1081,63 @@ function grafiaBuildAnnotations(essay, rubric){
    }
    return;
   }
-  const tokens=[];let m;
-  while((m=quoteRe.exec(part))){const q=m[1].trim(),nq=norm(q);if(q.length<=4&&['para','que','de','da','do','e','a','o','em','por','com','se','um','ao','as','os','no','na','nos','nas','isso','essa','esse','como'].includes(nq))continue;tokens.push({m,q,span:locate(q)});}
-  if(!tokens.length){addNarrativeComments(comp,part);return;}
-  tokens.sort((a,b)=>a.m.index-b.m.index);
-  const prefix=part.slice(0,tokens[0].m.index);
-  addNarrativeComments(comp,prefix);
-  for(let k=0;k<tokens.length;k++){
-   const item=tokens[k],next=tokens[k+1];
-   let end=next?next.m.index:part.length;
-   const afterQuote=item.m.index+item.m[0].length;
-   if(!next){const paraEnd=part.indexOf('\n\n',afterQuote);if(paraEnd>=0)end=Math.min(end,paraEnd);}
-   let raw=part.slice(afterQuote,Math.max(afterQuote,end)).trim();
-   const parsed=parseObservation(comp,item.q,raw,false);
-   let {category,comment,suggestion}=parsed;
-   if(!category)category=categoryFrom((comment||'')+' '+(item.q||'')+' '+raw);
-   if(!comment)comment='';
-   if(item.span){
-    const before=annotations.length;
-    const ok=addAnnotation(comp,item.span,category,comment,'Trecho original',suggestion);
-    if(!ok&&annotations.length===before)addUnlinked(comp,category,item.q,comment,suggestion);
-   }else addUnlinked(comp,category,item.q,comment,suggestion);
+  const lines=String(part).split(/\r?\n/);
+  const findAnchor=line=>{
+   const clean=String(line||'').trim().replace(/^[>*•\-\s]+/,'').replace(/^\*{1,2}/,'');
+   if(!/^(?:(?:trecho(?:\s+original)?|fragmento|excerto|texto\s+original|erro\s+identificado)\s*[:—–-]\s*)?[“"]/i.test(clean))return null;
+   const matches=[...clean.matchAll(quoteRe)];
+   for(const m of matches){const q=String(m[1]||'').trim(),span=locate(q);if(span)return {quote:q,span,match:m,clean};}
+   return null;
+  };
+  let firstAnchor=-1;
+  for(let i=0;i<lines.length;i++)if(findAnchor(lines[i])){firstAnchor=i;break;}
+  if(firstAnchor<0){
+   // Fallback for inline formats such as: O erro “trecho literal” ocorre porque…
+   const tokens=[];let m;
+   while((m=quoteRe.exec(part))){const q=m[1].trim(),nq=norm(q);if(q.length<=4&&['para','que','de','da','do','e','a','o','em','por','com','se','um','ao','as','os','no','na','nos','nas','isso','essa','esse','como'].includes(nq))continue;tokens.push({m,q,span:locate(q)});}
+   const matched=tokens.filter(x=>x.span);
+   if(!matched.length){addNarrativeComments(comp,part);return;}
+   for(let k=0;k<matched.length;k++){
+    const item=matched[k],next=matched[k+1],after=item.m.index+item.m[0].length,nextAt=next?next.m.index:part.length;
+    let raw=part.slice(after,Math.max(after,nextAt));
+    // Only keep same-line metadata as a prefix; do not attach a prior general assessment
+    // to the first detailed error in the paragraph.
+    if(k===0){const prefix=part.slice(0,item.m.index).split(/\r?\n/).pop().trim();if(prefix)raw=prefix+' '+raw;}
+    const parsed=parseObservation(comp,item.q,raw,false);let category=parsed.category||categoryFrom((parsed.comment||'')+' '+item.q+' '+raw);let comment=String(parsed.comment||'').trim();if(!comment)comment=raw.trim();
+    addAnnotation(comp,item.span,category,comment,'Trecho original',parsed.suggestion||'');
+   }
+   return;
   }
+  if(firstAnchor>0)addNarrativeComments(comp,lines.slice(0,firstAnchor).join('\n'));
+  let i=firstAnchor;
+  while(i<lines.length){
+   const anchor=findAnchor(lines[i]);
+   if(!anchor){i++;continue;}
+   let j=i+1;while(j<lines.length&&!findAnchor(lines[j]))j++;
+   const suffix=anchor.clean.slice(anchor.clean.indexOf(anchor.match[0])+anchor.match[0].length).replace(/\*{1,2}\s*$/,'').replace(/^\s*[:—–-]\s*/,'').trim();
+   const entryLines=[...(suffix?[suffix]:[]),...lines.slice(i+1,j).map(x=>x.trim()).filter(Boolean)];
+   let category='',suggestion='';const commentLines=[];
+   for(const originalLine of entryLines){
+    const line=originalLine.replace(/^(?:\*{1,2})|(?:\*{1,2})$/g,'').trim();if(!line)continue;
+    const explicit=line.match(/^(?:tipo\s+de\s+(?:desvio|erro)|categoria|classifica[cç][aã]o)\s*[:—–-]\s*(.+)$/i);
+    if(explicit&&!category){category=categoryFrom(explicit[1])||explicit[1].trim();continue;}
+    const label=line.match(/^([^:—–-]{3,85})\s*[:—–-]\s*(.*)$/);
+    if(!category&&label){const candidate=categoryFrom(label[1]);if(candidate&&norm(label[1])===norm(candidate)){category=candidate;if(label[2].trim())commentLines.push(label[2].trim());continue;}}
+    if(!category&&line.length<85){const candidate=categoryFrom(line);if(candidate&&norm(line.replace(/[.!]$/,''))===norm(candidate)){category=candidate;continue;}}
+    commentLines.push(line.replace(/^(?:coment[aá]rio|explica[cç][aã]o|justificativa)\s*[:—–-]\s*/i,'').trim());
+   }
+   const comment=commentLines.filter(Boolean).join('\n').trim();
+   // Capture an explicit corrected form as metadata while preserving the full original
+   // explanation verbatim, including quotation marks around words and examples.
+   const suggested=comment.match(/(?:forma\s+(?:mais\s+)?(?:adequada|correta|sugerida)|corre[cç][aã]o(?:\s+(?:proposta|sugerida))?|o\s+correto\s+seria|sugere-se)[^“"\n]{0,100}[“"]([^”"\n]{4,180})[”"]/i);
+   if(suggested&&norm(suggested[1])!==norm(anchor.quote)&&!grafiaLocateQuote(text,suggested[1]))suggestion=suggested[1].trim();
+   if(anchor.span){const added=addAnnotation(comp,anchor.span,category,comment||suffix||'Confira este trecho conforme o comentário do espelho.','Trecho original',suggestion);if(!added)addUnlinked(comp,category,anchor.quote,comment||suffix,suggestion);}
+   else addUnlinked(comp,category,anchor.quote,comment||suffix,suggestion);
+   i=j;
+  }
+
  }
+
 
  for(let i=1;i<=5;i++){
   const comp='C'+i,section=String(rubric[comp]?.section||'').trim();if(!section)continue;
@@ -837,11 +1146,15 @@ function grafiaBuildAnnotations(essay, rubric){
    const before=section.slice(0,tableMatch.index),table=section.slice(tableMatch.index);
    addNarrativeComments(comp,before);
    processQuotedSegment(comp,table,true);
-  }else processQuotedSegment(comp,section,false);
-  // Se o espelho contém uma análise narrativa que não foi ligada a um trecho,
-  // ela permanece disponível abaixo dos comentários, sem ser convertida em grifo artificial.
-  const sectionHasQuotes=/[“"][^”"]{4,}[”"]/.test(section);
-  if(!sectionHasQuotes)addNarrativeComments(comp,section);
+  }else{
+   // Separate blank-line blocks before parsing: a general competency assessment should
+   // not accidentally become the explanation for the final quoted error in the section.
+   const blocks=section.split(/\n\s*\n+/).map(x=>x.trim()).filter(Boolean);
+   for(const block of blocks){
+    if(/[“"][^”"]{4,}[”"]/.test(block))processQuotedSegment(comp,block,false);
+    else addNarrativeComments(comp,block);
+   }
+  }
  }
  // Ligar observações que não vêm entre aspas a elementos específicos do texto.
  // A observação original é preservada: a classificação serve para localizar o trecho,
@@ -857,7 +1170,7 @@ function grafiaBuildAnnotations(essay, rubric){
  function tokensOf(value){return norm(value).replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w.length>=4&&!stopWords.has(w));}
  function findQuoteSpan(value){
   const q=String(value||'').trim();if(q.length<4)return null;
-  let hit=locate(q);if(hit)return hit;
+  let hit=locate(q,true);if(hit)return hit;
   const n=norm(q).replace(/\s+/g,' ').trim();
   if(n.length<4)return null;
   const essayFlat=essayNorm.out.replace(/\s+/g,' ');
@@ -871,7 +1184,7 @@ function grafiaBuildAnnotations(essay, rubric){
   const entityRe=/\b(?:[A-ZÁÉÍÓÚÂÊÔÃÕÇ][\p{L}\p{M}]+)(?:\s+(?:de|da|do|dos|das|e|[A-ZÁÉÍÓÚÂÊÔÃÕÇ][\p{L}\p{M}]+)){1,5}\b/gu;
   const leading=new Set(['a','o','as','os','um','uma','no','na','nos','nas','ao','aos','de','da','do','das','em','por','para','além','nesse','nessa','portanto','assim','dessa','desse','segundo','diante','contudo','entretanto','logo','isso','essa','esse','este','esta','todos','todas','governo','prefeitura','estado','ministério','secretaria','escola','família','poder','público','instituição','organização','conselho','universidade','além']);
   const accept=(phrase,start,end)=>{
-   phrase=String(phrase||'').trim();if(phrase.length<4||leading.has(norm(phrase.split(/\s+/)[0]))||overlaps(start,end))return;
+   phrase=String(phrase||'').trim();if(phrase.length<4||leading.has(norm(phrase.split(/\s+/)[0])))return;
    if(!candidates.some(x=>x.start===start&&x.end===end))candidates.push({start,end,text:phrase});
   };
   for(const m of text.matchAll(entityRe)){
@@ -894,7 +1207,7 @@ function grafiaBuildAnnotations(essay, rubric){
 
  function splitInterventionObservation(item){
   const source=String(item.comment||'');
-  if(!/interven[cç][aã]o/i.test(source)||!/(?:proposta de interven[cç][aã]o|interven[cç][aã]o)/i.test(String(item.category||'')))return false;
+  if(!/(?:interven[cç][aã]o|proposta)/i.test(source)||!/(?:proposta de interven[cç][aã]o|interven[cç][aã]o|proposta)/i.test(String(item.category||'')))return false;
   const specs=[
    {category:'Agente da intervenção',re:/(?:o\s+)?agente\s*[:—–-]?\s+(.+?)(?=\s*[,;|]\s*(?:a\s+)?a[cç][aã]o\b|\s+(?:a\s+)?a[cç][aã]o\b|[.;]|$)/i},
    {category:'Ação da intervenção',re:/(?:a\s+)?a[cç][aã]o\s*[:—–-]?\s+(.+?)(?=\s*[,;|]\s*(?:o\s+)?meio\b|\s+(?:o\s+)?meio\b|[.;]|$)/i},
@@ -971,10 +1284,12 @@ function grafiaBuildAnnotations(essay, rubric){
  }
  const remainingComments=[];
  for(const item of unlinkedComments){
+  if(item.isGeneral){remainingComments.push({...item});continue;}
   let category=String(item.category||'').trim();
   if(genericLabels.test(category))category='';
   if(!category)category=categoryFrom(String(item.comment||'')+' '+String(item.quote||'')+' '+String(item.suggestion||''));
   if(category==='Proposta de intervenção'&&splitInterventionObservation({...item,category}))continue;
+  if(!category&&item.competency==='C5'&&/(proposta|interven[cç][aã]o|agente|a[cç][aã]o|meio|finalidade|detalhamento)/i.test(String(item.comment||'')))category='Proposta de intervenção';
   const exact=findQuoteSpan(item.quote)||(()=>{
    const quoted=[...String(item.comment||'').matchAll(/[“"]([^”"\n]{5,180})[”"]/g)].map(m=>m[1].trim()).sort((a,b)=>b.length-a.length);
    for(const q of quoted){const span=findQuoteSpan(q);if(span)return span;}
@@ -982,10 +1297,8 @@ function grafiaBuildAnnotations(essay, rubric){
   })();
   let span=exact;
   if(!span)span=sentenceForComment(item,category);
-  if(span&&span.end>span.start&&!overlaps(span.start,span.end)&&text.slice(span.start,span.end).trim().length>=4){
-   const actual=text.slice(span.start,span.end);
-   annotations.push({id:'context-'+item.competency+'-'+annotations.length,competency:item.competency,category:genericLabels.test(category)?'':category,quote:actual,start:span.start,end:span.end,comment:String(item.comment||'').trim(),suggestion:String(item.suggestion||'').trim(),matchType:'context'});
-   used.push({start:span.start,end:span.end});
+  if(span&&span.end>span.start&&text.slice(span.start,span.end).trim().length>=4){
+   addAnnotation(item.competency,span,category,item.comment,'context',item.suggestion||'');
   }else{
    // Keep every unmatched observation accessible instead of inventing a highlight.
    remainingComments.push({...item,category:category||item.category||''});
@@ -1019,9 +1332,13 @@ function buildErrorSummary(rubric,annotations,unlinkedComments){
   ['Argumentação',['argumentacao','argumento','aprofundamento argumentativo','argumento superficial','tese','evidencia','relacao causal','progressao argumentativa']],
   ['Desenvolvimento do tema',['fuga ao tema','tangenciamento','desenvolvimento do tema','compreensao da proposta','recorte tematico']]
  ];
- const generic=/^(?:coment[aá]rio(?: geral| do corretor| da corre[cç][aã]o| extra[ií]do)?|observa[cç][aã]o(?: da corre[cç][aã]o| do corretor)?|feedback|trecho relacionado ao coment[aá]rio|correspond[eê]ncia aproximada)[.!:;—–-]*$/i;
+ const generic=/^(?:coment[aá]rio(?: geral| do corretor| da corre[cç][aã]o| extra[ií]do)?|observa[cç][aã]o(?: da corre[cç][aã]o| do corretor)?|feedback|an[aá]lise da compet[eê]ncia|parecer geral|trecho relacionado ao coment[aá]rio|correspond[eê]ncia aproximada)[.!:;—–-]*$/i;
  function infer(item){
   const cat=String(item.category||'').trim(),content=normLabel([cat,item.comment,item.quote,item.suggestion].join(' '));
+  if(item.isGeneral||generic.test(cat))return '';
+  const commentText=String(item.comment||'');
+  const purelyPositive=/\b(?:pertinente|adequad[oa]|clara|claro|coerente|bem articulad[oa]|satisfat[oó]ri[oa]|consistente|eficiente|bem desenvolvido|bem desenvolvida|correto|correta|preciso|precisa)\b/i.test(commentText)&&!item.suggestion&&!/\b(?:mas|por[eé]m|contudo|entretanto|precisa|deve|falta|faltam|aus[eê]ncia|inadequad[oa]|superficial|fraco|fraca|prejudica|compromete|dificulta|erro|desvio|corrigir|melhorar|insuficiente|pouco)\b/i.test(commentText);
+  if(purelyPositive)return '';
   if(cat&&!generic.test(cat)){
    // Standardize slight variations so repeated instances accumulate under one label.
    const nc=normLabel(cat);
@@ -1029,6 +1346,10 @@ function buildErrorSummary(rubric,annotations,unlinkedComments){
    return cat;
   }
   for(const [label,keys] of errorRules){if(keys.some(k=>content.includes(normLabel(k))))return label;}
+  if(item.competency==='C5'&&/(agente|a[cç][aã]o|meio|execu[cç][aã]o|finalidade|detalhamento|interven[cç][aã]o|proposta)/i.test(content))return 'Proposta de intervenção';
+  if(item.competency==='C2'&&/(repert[oó]rio|refer[eê]ncia sociocultural|cita[cç][aã]o|obra|autor|pensador|fil[oó]sofo|dado estat[ií]stico)/i.test(content))return 'Repertório sociocultural';
+  if(item.competency==='C3'&&/(argument|tese|evid[eê]ncia|causa|consequ[eê]ncia|desenvolv)/i.test(content))return 'Argumentação';
+  if(item.competency==='C4'&&/(coes[aã]o|conectiv|conector|retomada|encadeamento)/i.test(content))return 'Coesão textual';
   return '';
  }
  return COMP_SHORT.map(comp=>{
@@ -1039,7 +1360,8 @@ function buildErrorSummary(rubric,annotations,unlinkedComments){
   if(patterns.length)return {competency:comp,mainError:patterns[0].name,count:patterns[0].count,patterns};
   const fallback=String(rubric?.[comp]?.summary||unlinked[0]?.comment||linked[0]?.comment||'').replace(/^\s*(?:coment[aá]rio geral|coment[aá]rio do corretor|feedback|observa[cç][aã]o da corre[cç][aã]o)\s*[:—–-]?\s*/i,'').replace(/\s+/g,' ').trim();
   const concise=fallback.length>220?fallback.slice(0,217).replace(/\s+\S*$/,'')+'…':fallback;
-  return {competency:comp,mainError:concise||'Confira os comentários desta competência.',count:items.length,patterns:[]};
+  const positiveFallback=/\b(?:pertinente|adequad[oa]|clara|claro|coerente|bem articulad[oa]|satisfat[oó]ri[oa]|consistente|eficiente|bem desenvolvido|bem desenvolvida|correto|correta|preciso|precisa|aborda o tema|atende ao tema|compreende a proposta|relaciona-se ao tema|relevante|satisfat[oó]rio)\b/i.test(fallback)&&! /\b(?:mas|por[eé]m|contudo|entretanto|precisa|deve|falta|faltam|aus[eê]ncia|inadequad[oa]|superficial|fraco|fraca|prejudica|compromete|dificulta|erro|desvio|corrigir|melhorar|insuficiente|pouco)\b/i.test(fallback);
+  return {competency:comp,mainError:positiveFallback?'Nenhum erro específico identificado':(concise||'Confira os comentários desta competência.'),count:positiveFallback?0:items.length,patterns:[]};
  });
 }
 function grafiaAnalyzeBeta(){
@@ -1051,7 +1373,7 @@ function grafiaAnalyzeBeta(){
  if(raw){
   try{
    const arr=Array.isArray(raw)?raw:(Array.isArray(raw.corrections)?raw.corrections:null);
-   const rows=(arr||[raw]).map(r=>normalizeCorrection(r));
+   const rows=(arr||[raw]).map(r=>normalizeCorrection(r,suppliedEssay));
    previewCorrections(rows,'Correção estruturada');
    result.innerHTML='<article class="panel glass"><div class="parse-alert ok">Correção reconhecida. Abaixo está a confirmação final para importar.</div></article>';
    return;
@@ -1059,7 +1381,7 @@ function grafiaAnalyzeBeta(){
  }
  const lines=content.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
  const blocks=content.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean);
- const themeMatch=content.match(/(?:tema(?:\s+da\s+reda[cç][aã]o)?|assunto)\s*[:\-]\s*([^\n]+)/i);
+ const themeMatch=content.match(/(?:tema(?:\s+(?:da\s+)?reda[cç][aã]o)?|tema\s+proposto|proposta\s+tem[aá]tica|assunto)\s*[:\-]\s*([^\n]+)/i);
  const theme=themeMatch?themeMatch[1].replace(/["“”]/g,'').trim():'';
  const rubric=grafiaParseRubric(content);
  const scores={};for(let i=1;i<=5;i++)scores['C'+i]=rubric['C'+i].score;
@@ -1078,14 +1400,16 @@ function grafiaAnalyzeBeta(){
  const analysis=grafiaBuildAnnotations(essay,rubric);
  const annotations=analysis.annotations, unlinkedComments=analysis.unlinkedComments, errorSummary=analysis.errorSummary;
  const date=new Date().toISOString().slice(0,10);
- const overallMatch=content.match(/(?:parecer\s*final|feedback\s*geral|considera[cç][oõ]es\s*finais)\s*[:\-]?\s*([\s\S]*?)(?=\n\s*(?:prioridades?\s+(?:de\s+)?melhoria|compet[eê]ncia\s*(?:[1-5]|I{1,3}|IV|V)|$))/i);
+ const overallMatch=content.match(/(?:parecer\s*final|feedback\s*geral|considera[cç][oõ]es\s*finais|coment[aá]rio\s*final)\s*[:\-]?\s*([\s\S]*?)(?=\n\s*(?:prioridades?\s+(?:de\s+)?melhoria|pontos?\s+fortes|aspectos?\s+positivos|compet[eê]ncia\s*(?:[1-5]|I{1,3}|IV|V))|$)/i);
  const overallFeedback=overallMatch?overallMatch[1].trim():'';
+ const strengthsMatch=content.match(/(?:pontos?\s+fortes|aspectos?\s+positivos|for[cç]as\s+do\s+texto)\s*[:\-]?\s*([\s\S]*?)(?=\n\s*(?:prioridades?\s+(?:de\s+)?melhoria|compet[eê]ncia\s*(?:[1-5]|I{1,3}|IV|V)|parecer\s*final|feedback\s*geral)|$)/i);
+ const strengths=strengthsMatch?strengthsMatch[1].split(/\r?\n|;|(?<=[.!?])\s+/).map(x=>x.replace(/^\s*(?:[-*•]|\d+[.)])\s*/,'').trim()).filter(x=>x.length>5):[];
  const summaries=Object.entries(rubric).map(([c,v])=>`${c} — ${v.score}/200\n${v.summary||v.section.slice(0,500)}`).join('\n\n');
  const row={
   id:`texto-${slug(theme)}-${date}`,theme,date,score,comps,notes:overallFeedback||summaries,
   source:'json',text:essay,annotations,
   errorSummary,unlinkedComments,
-  strengths:[],sourceFile:'Espelho comentado colado',importFormat:'grafia.text-beta/v3'
+  strengths,sourceFile:'Espelho comentado colado',importFormat:'grafia.text-beta/v4'
  };
  result.innerHTML=`<article class="panel glass"><div class="panel-head"><div><div class="panel-title">Análise concluída</div><div class="panel-description">Os dados foram extraídos diretamente dos textos enviados. Nenhum campo intermediário precisa ser editado.</div></div><span class="pill">Pronto para importar</span></div><div class="reader-stats"><div class="reader-stat"><small>NOTA TOTAL</small><strong>${score}/1000</strong></div><div class="reader-stat"><small>NOTAS</small><strong>5/5</strong></div><div class="reader-stat"><small>MARCAÇÕES</small><strong>${annotations.length}</strong></div></div><div class="panel-description" style="margin-top:10px">Confira o resumo abaixo e confirme a importação. Os trechos encontrados recebem grifos; observações sem correspondência segura permanecem disponíveis nos comentários do corretor.</div></article>`;
  previewCorrections([row],'Espelho comentado interpretado');
@@ -1094,6 +1418,38 @@ $('grafiaAnalyzeBtn').addEventListener('click',grafiaAnalyzeBeta);
 $('grafiaClearBtn').addEventListener('click',()=>{$('grafiaEssayText').value='';$('grafiaConversationText').value='';$('grafiaAnalysisResult').innerHTML='';$('importResult').innerHTML='';pendingImport=null;});
 $('grafiaSourceFile').addEventListener('change',async e=>{const f=e.target.files&&e.target.files[0];if(!f)return;try{const t=await f.text();if(/\.json$/i.test(f.name)){ $('grafiaConversationText').value=t;grafiaAnalyzeBeta();}else{$('grafiaConversationText').value=($('grafiaConversationText').value+'\n\n'+t).trim();toast('Arquivo carregado','Toque em Analisar e preparar importação.');}}catch(err){toast('Falha ao ler arquivo','Tente copiar o conteúdo e colar no campo.');}e.target.value='';});
 $('grafiaShowFormatBtn').addEventListener('click',()=>{$('importResult').innerHTML='';$('showFormatBtn').click();});
+$('importHelpBtn').addEventListener('click',()=>{$('importHelpModal').classList.add('open');});
+$('closeImportHelp').addEventListener('click',()=>{$('importHelpModal').classList.remove('open');});
+$('closeImportHelpBtn').addEventListener('click',()=>{$('importHelpModal').classList.remove('open');});
+$('importHelpModal').addEventListener('click',e=>{if(e.target===$('importHelpModal'))$('importHelpModal').classList.remove('open');});
+$('legacyVisibleFile').addEventListener('change',e=>{const file=e.target.files&&e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{$('legacyVisiblePaste').value=String(reader.result||'');};reader.readAsText(file);e.target.value='';});
+$('legacyVisibleImport').addEventListener('click',()=>{$('correctionPaste').value=$('legacyVisiblePaste').value;$('pasteImportBtn').click();});
+$('legacyVisibleClear').addEventListener('click',()=>{$('legacyVisiblePaste').value='';$('importResult').innerHTML='';});
+$('legacyVisiblePrompt').addEventListener('click',()=>{
+ const prompt = `GUIA PARA GERAR UMA CORREÇÃO JSON COMPATÍVEL COM A GRAFIA
+
+Analise a redação e o espelho de correção fornecidos. Preserve integralmente o texto original e os comentários do corretor. Não invente observações. Produza somente JSON válido, sem Markdown ou explicações fora do JSON, seguindo esta estrutura:
+
+{
+  "format": "escrita.correction",
+  "version": 1,
+  "correction": {
+    "id": "identificador-unico",
+    "theme": "Tema da redação",
+    "date": "AAAA-MM-DD",
+    "competencies": {"C1":{"score":0},"C2":{"score":0},"C3":{"score":0},"C4":{"score":0},"C5":{"score":0}},
+    "text": "Texto integral da redação, exatamente como foi escrito",
+    "annotations": [{"id":"a1","start":0,"end":10,"quote":"trecho literal exato","competency":"C1","category":"Categoria específica","comment":"Comentário completo do corretor","suggestion":""}],
+    "unlinkedComments": [{"competency":"C2","category":"Comentário geral","comment":"Observação que não corresponde a um trecho específico"}],
+    "errorSummary": [{"competency":"C1","mainError":"Síntese fiel do diagnóstico","count":0},{"competency":"C2","mainError":"Síntese fiel do diagnóstico","count":0},{"competency":"C3","mainError":"Síntese fiel do diagnóstico","count":0},{"competency":"C4","mainError":"Síntese fiel do diagnóstico","count":0},{"competency":"C5","mainError":"Síntese fiel do diagnóstico","count":0}],
+    "overallFeedback": "Síntese fiel da correção",
+    "strengths": []
+  }
+}
+
+Regras: cada nota C1–C5 deve estar entre 0 e 200 e a nota total é a soma exata dessas cinco notas. Os índices start/end devem corresponder ao trecho literal no texto (start inclusivo, end exclusivo). Se não conseguir associar um comentário a um trecho exato, mantenha-o em unlinkedComments. Preserve os comentários relevantes sem resumir. Não crie tarefas automáticas de treino. Nunca invente dados ausentes.`;
+ downloadBlob(prompt,'prompt_json_grafia.txt','text/plain;charset=utf-8');toast('Prompt pronto','O prompt para arquivo ou código foi baixado.');
+});
 $('grafiaDownloadPromptBtn').addEventListener('click',()=>{$('downloadTemplateBtn').click();});
 
 $('correctionInput').addEventListener('change',e=>{handleCorrectionFile(e.target.files[0]);e.target.value='';});
@@ -1109,7 +1465,8 @@ $('clearPasteBtn').addEventListener('click',()=>{$('correctionPaste').value='';$
 
 const zone=$('uploadZone');zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag');});zone.addEventListener('dragleave',()=>zone.classList.remove('drag'));zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('drag');handleCorrectionFile(e.dataTransfer.files[0]);});
 $('showFormatBtn').addEventListener('click',()=>{const example={format:'escrita.correction',version:1,correction:{id:'id-unico-da-correcao',theme:'Tema da redação',date:'AAAA-MM-DD',score:680,competencies:{C1:{score:80},C2:{score:160},C3:{score:120},C4:{score:120},C5:{score:200}},text:'Texto integral exatamente como foi corrigido...',annotations:[{id:'a1',start:0,end:12,quote:'trecho exato',competency:'C1',category:'Construção sintática',comment:'Comentário da correção'}],unlinkedComments:[{competency:'C2',category:'Comentário geral',comment:'Observação do corretor que não corresponde a um trecho grifável.'}],errorSummary:COMP_SHORT.map(c=>({competency:c,mainError:'Principal erro desta competência',count:1})),overallFeedback:'Síntese da correção',strengths:[]}};$('importResult').innerHTML=`<article class="panel glass"><div class="panel-title">Formato esperado: JSON estruturado</div><div class="panel-description" style="margin:8px 0 12px">O site exige um objeto com este padrão. As marcações incluem os índices start/end do trecho no texto para que o realce seja exato. O arquivo real será gerado para cada correção, então você não precisará preencher esse código manualmente.</div><pre class="code-preview">${esc(JSON.stringify(example,null,2))}</pre></article>`;});
-$('downloadTemplateBtn').addEventListener('click',()=>{const promptText="GUIA-PROMPT PARA GERAR CORREÇÕES COMPATÍVEIS COM A GRAFIA\n\nFormato atual observado: escrita.correction, versão 1.\n\nObjetivo\n\nCopie este prompt para outro chat. Ele orienta a correção de\nredações segundo os parâmetros solicitados e a geração de um JSON que\npossa ser colado diretamente na Grafia, sem baixar arquivo.\n\nPrompt de instrução\n\nVocê é corretor de redações e gerador de dados estruturados para a\nplataforma Grafia. Corrija com rigor, clareza e finalidade pedagógica.\nIdentifique o parâmetro solicitado pelo usuário. Se for ENEM, use as\ncinco competências oficiais. Se for outro método, respeite-o na análise\ntextual; contudo, a interface atual da Grafia exige cinco notas C1–C5,\nde 0 a 200, e nota total de 0 a 1000. Não falsifique equivalências entre\nescalas. Se o método não couber nessa estrutura, explique a limitação e\npeça autorização antes de adaptar as notas.\n\nA Grafia organiza os dados da correção fornecida; o sistema valida, exibe e\ndados; o site valida, exibe e salva. Nunca diga que os dados já foram\nimportados. Não invente fontes, citações, estatísticas ou erros. A\ncorreção é uma estimativa pedagógica, não uma nota oficial do\nENEM.\n\n1. Preserve o texto\n\n-   Preserve integralmente a redação original no campo text, inclusive\n    parágrafos, acentos, pontuação e erros.\n-   Não reescreva silenciosamente o texto.\n-   Diferencie erros observáveis de preferências estilísticas.\n\n2. Critérios ENEM\n\nAtribua uma nota separada de 0 a 200 para cada competência, usando a\nmatriz oficial pertinente à edição solicitada. A escala costuma avançar\nem níveis de 40 pontos (0, 40, 80, 120, 160 e 200). Se apresentar uma\nestimativa não oficial diferente, explique fora do JSON.\n\n-   C1 — Modalidade escrita formal: ortografia, acentuação, pontuação,\n    concordância, regência, sintaxe e registro. Cite trechos exatos e\n    explique o problema.\n-   C2 — Compreensão da proposta e desenvolvimento do tema: aderência ao\n    tema, gênero dissertativo-argumentativo e repertório sociocultural\n    pertinente, legítimo e produtivo. Não invente a veracidade de\n    referências.\n-   C3 — Seleção e organização de argumentos: tese, projeto de texto,\n    progressão, evidências, explicações, coerência, generalizações e\n    contradições.\n-   C4 — Mecanismos linguísticos: coesão referencial e sequencial,\n    conectivos e encadeamento entre frases e parágrafos.\n-   C5 — Proposta de intervenção: relação com o problema e respeito aos\n    direitos humanos. Verifique agente, ação, meio/modo,\n    finalidade/efeito e detalhamento conforme a matriz aplicável. Não\n    considere presente um elemento que não esteja expresso ou claramente\n    implicado.\n\nSome as cinco notas para obter score. A soma deve corresponder\nexatamente ao total e ficar entre 0 e 1000.\n\n3. Marcações interativas\n\nInclua marcações de erros, problemas argumentativos e, quando útil,\npontos fortes. Cada marcação deve conter id, start, end, quote,\ncompetency, category, comment.\n\n-   competency deve ser uma das strings C1, C2, C3, C4 ou C5.\n-   quote deve ser um trecho literal e contínuo do campo text.\n-   start é o índice inicial inclusivo e end o índice final exclusivo;\n    text.slice(start, end) deve corresponder exatamente a quote.\n-   Os índices são os índices de string do JavaScript (UTF-16). Prefira\n    trechos curtos e únicos e confira todos os índices.\n-   Nunca invente citações ou use índices aproximados. Não crie erros\n    artificiais para preencher o sistema.\n\nSe houver observações do espelho que não possam ser ligadas a um trecho literal, inclua-as em unlinkedComments, mantendo a explicação fiel e indicando a competência quando possível. Não descarte comentários gerais nem force grifos incertos. Evite repetir comentários já presentes em annotations.\n\n4. Resumo por competência\n\nerrorSummary deve conter exatamente cinco objetos, um por competência.\nCada objeto deve conter competency, mainError e count. count é inteiro;\nuse 0 quando nenhuma ocorrência tiver sido identificada. Se não houver\nerro claro, descreva honestamente um aspecto a consolidar.\n\nstrengths é uma lista de pontos fortes realmente observados. Não crie\nlistas de tarefas de treino; a Grafia exibirá os comentários e os padrões\nde erro identificados, sem sugerir tarefas automaticamente.\n\n5. Estrutura JSON obrigatória\n\nEntregue um único objeto JSON válido. format deve ser exatamente\nescrita.correction e version deve ser o número 1. Substitua os exemplos\npelos dados reais. Não use comentários, reticências ou vírgulas finais.\n\n    {\n      \"format\": \"escrita.correction\",\n      \"version\": 1,\n      \"correction\": {\n        \"id\": \"identificador-unico\",\n        \"theme\": \"Tema da redação\",\n        \"date\": \"AAAA-MM-DD\",\n        \"score\": 600,\n        \"competencies\": {\n          \"C1\": {\"score\": 120},\n          \"C2\": {\"score\": 120},\n          \"C3\": {\"score\": 120},\n          \"C4\": {\"score\": 120},\n          \"C5\": {\"score\": 120}\n        },\n        \"text\": \"Texto integral original da redação.\",\n        \"annotations\": [\n          {\n            \"id\": \"a1\",\n            \"start\": 0,\n            \"end\": 25,\n            \"quote\": \"trecho literal exato\",\n            \"competency\": \"C1\",\n            \"category\": \"Pontuação\",\n            \"comment\": \"Explicação específica do problema ou acerto.\"\n          }\n        ],\n        \"errorSummary\": [\n          {\"competency\":\"C1\",\"mainError\":\"Aspecto principal\",\"count\":1},\n          {\"competency\":\"C2\",\"mainError\":\"Aspecto principal\",\"count\":1},\n          {\"competency\":\"C3\",\"mainError\":\"Aspecto principal\",\"count\":1},\n          {\"competency\":\"C4\",\"mainError\":\"Aspecto principal\",\"count\":1},\n          {\"competency\":\"C5\",\"mainError\":\"Aspecto principal\",\"count\":1}\n        ],\n        \"overallFeedback\": \"Síntese global equilibrada e acionável.\",\n        \"strengths\": [\"Ponto forte comprovado pelo texto\"]\n      }\n    }\n\nAs notas, contagens e trechos acima são apenas ilustrativos;\nnunca os copie automaticamente para uma correção real.\n\n6. Regras técnicas de validação\n\n1.  theme não pode ficar vazio.\n2.  date deve usar AAAA-MM-DD.\n3.  text deve conter a redação integral e ter pelo menos 30 caracteres.\n4.  score deve ser número entre 0 e 1000.\n5.  competencies deve conter C1, C2, C3, C4 e C5, cada qual com score\n    numérico entre 0 e 200.\n6.  A soma de C1–C5 deve ser exatamente igual a score; o site calcula\n    automaticamente esse total a partir das cinco competências.\n7.  annotations deve ser uma lista; cada anotação deve ter competência\n    válida e citação literal com índices corretos.\n8.  errorSummary deve conter uma entrada para cada competência C1–C5.\n9.  overallFeedback deve ser uma string e strengths deve ser uma lista,\n    mesmo que vazia. Não é necessário gerar tarefas de treino.\n10. Use aspas duplas em todas as strings e chaves JSON.\n11. A Grafia aceita um objeto de correção, um array ou um objeto com\n    corrections contendo uma lista; para uso comum, prefira um objeto\n    por redação.\n12. Não inclua PDF, links, comentários ou explicações dentro do JSON.\n\n7. Resposta visível ao usuário\n\nPrimeiro, apresente a correção legível: nota estimada, pontuações C1–C5\njustificadas, análise, comentários ligados aos trechos e pontos fortes. Depois, apresente o JSON completo em um único bloco\nde código marcado como json, sem omitir campos nem usar reticências.\nInstrua a pessoa a copiar apenas o JSON e colá-lo na Grafia em Importar\ncorreção → Cole o código da correção → Validar código colado. Ela deve\nconferir a prévia e confirmar o salvamento. O download é opcional.\n\n8. Verificação final\n\nAntes de responder, confirme: - O JSON é válido e usa os nomes exatos\ndos campos? - O texto integral foi preservado? - As cinco notas estão na\nfaixa e somam a nota total? - Há um resumo para cada competência? - Cada\nquote aparece literalmente no texto e os índices correspondem? - Os\ncomentários são específicos, respeitosos e úteis? - As observações e os comentários\nderivam da correção real? - A resposta não afirma que a Grafia já salvou\nos dados?\n\nSe algo falhar, corrija o JSON antes de entregá-lo. Nunca substitua o\nJSON por pseudocódigo, explicações ou um arquivo fictício.\n\nLimitação para outros métodos\n\nA interface atual da Grafia foi construída para cinco competências C1–C5\ne nota total de 0 a 1000. Se o usuário pedir outro método com critérios\nou escalas diferentes, aplique-o à análise textual, mas não invente uma\nconversão oficial. Explique a limitação e peça autorização antes de\nadaptar a avaliação às cinco notas do painel. Identifique qualquer\nadaptação como estimativa pedagógica não oficial.\n\n------------------------------------------------------------------------\n\nObservação: este guia descreve o esquema encontrado no HTML atual da\nGrafia. Se a estrutura do site mudar, atualize este prompt para\nacompanhar a nova versão.\n";downloadBlob(promptText,'prompt_compatibilidade_grafia.txt','text/plain;charset=utf-8');toast('Prompt pronto','O guia para orientar a correção foi baixado em TXT.');});
+$('downloadTemplateBtn').addEventListener('click',()=>{downloadBlob(GRAFIA_COMPAT_PROMPT,'prompt_compatibilidade_grafia.txt','text/plain;charset=utf-8');toast('Prompt pronto','O guia atualizado foi baixado em TXT.');});
+
 function renderStudy(){
  const rows=$('studySummaryRows');
  if(!essays.length){rows.innerHTML='<tr><td colspan="3"><div class="empty-state">Importe uma correção estruturada para montar sua tabela de padrões.</div></td></tr>';return;}
@@ -1125,16 +1482,16 @@ function renderStudy(){
 }
 function annotationColor(comp){return ({C1:'c1',C2:'c2',C3:'c3',C4:'c4',C5:'c5'})[comp]||'c1';}
 let activeEssayId=null;
-function renderReader(id){const e=essays.find(x=>x.id===id);if(!e)return;activeEssayId=id;$('readerThemeHeading').textContent=e.theme;$('readerMeta').textContent=`${fmtDate(e.date)} · ${Array.isArray(e.annotations)?e.annotations.length:0} grifos${Array.isArray(e.unlinkedComments)&&e.unlinkedComments.length?` · ${e.unlinkedComments.length} comentários adicionais`:''} · clique nos destaques para abrir o comentário`;$('readerScore').innerHTML=`<div class="reader-score-big">${Number(e.score)||0}<span style="font-size:11px;color:var(--muted);font-weight:650"> / 1000 pontos</span></div><span class="pill">${e.source==='sample'?'Exemplo demonstrativo':'Correção importada'}</span>${e.sourceFile?`<span class="pill">PDF de referência: ${esc(e.sourceFile)}</span>`:''}`;
- const textValue=String(e.text||'');const annotations=Array.isArray(e.annotations)?[...e.annotations].sort((a,b)=>a.start-b.start):[];let html='',cursor=0,validCount=0;for(const a of annotations){if(a.start<cursor||a.start<0||a.end>textValue.length||textValue.slice(a.start,a.end)!==a.quote)continue;html+=esc(textValue.slice(cursor,a.start))+`<mark class="competency-mark ${annotationColor(a.competency)}" id="mark-${esc(a.id)}" data-annotation="${esc(a.id)}" role="button" tabindex="0" aria-label="${esc(a.competency)}: ${esc(a.category)}">${esc(textValue.slice(a.start,a.end))}</mark>`;cursor=a.end;validCount++;}html+=esc(textValue.slice(cursor));
+function renderReader(id){const e=essays.find(x=>x.id===id);if(!e)return;activeEssayId=id;$('readerThemeHeading').textContent=e.theme;const readerAnnotations=Array.isArray(e.annotations)?e.annotations:[];const physicalMarkCount=readerAnnotations.filter(a=>!a.linkedTo).length;const linkedObservationCount=readerAnnotations.filter(a=>!!a.linkedTo).length;$('readerMeta').textContent=`${fmtDate(e.date)} · ${physicalMarkCount} grifos${linkedObservationCount?` · ${linkedObservationCount} observações adicionais ligadas a grifos`:''}${Array.isArray(e.unlinkedComments)&&e.unlinkedComments.length?` · ${e.unlinkedComments.length} comentários sem trecho identificado`:''} · clique nos destaques para abrir os comentários`;$('readerScore').innerHTML=`<div class="reader-score-big">${Number(e.score)||0}<span style="font-size:11px;color:var(--muted);font-weight:650"> / 1000 pontos</span></div><span class="pill">${e.source==='sample'?'Exemplo demonstrativo':'Correção importada'}</span>${e.sourceFile?`<span class="pill">PDF de referência: ${esc(e.sourceFile)}</span>`:''}`;
+ const textValue=String(e.text||'');const annotations=Array.isArray(e.annotations)?[...e.annotations].sort((a,b)=>a.start-b.start):[];let html='',cursor=0,validCount=0;for(const a of annotations){if(a.linkedTo||a.start<cursor||a.start<0||a.end>textValue.length||textValue.slice(a.start,a.end)!==a.quote)continue;html+=esc(textValue.slice(cursor,a.start))+`<mark class="competency-mark ${annotationColor(a.competency)}" id="mark-${esc(a.id)}" data-annotation="${esc(a.id)}" role="button" tabindex="0" aria-label="${esc(a.competency)}: ${esc(a.category)}">${esc(textValue.slice(a.start,a.end))}</mark>`;cursor=a.end;validCount++;}html+=esc(textValue.slice(cursor));
  if(textValue){$('readerEssayText').innerHTML=html.split(/\n\n/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');}else{$('readerEssayText').innerHTML='<div class="empty-state">Este registro não contém o texto integral. Importe a versão estruturada que acompanha a correção para ativar as marcações.</div>';}
  $('annotationCountPill').textContent=`${validCount} marcações`;
  const extraComments=Array.isArray(e.unlinkedComments)?e.unlinkedComments:[];
  const commentCards=[...annotations.map((a,i)=>({ ...a, linked:true, order:i+1 })),...extraComments.map((a,i)=>({...a,id:a.id||`extra-${i+1}`,linked:false,order:annotations.length+i+1}))];
- $('readerComments').innerHTML=commentCards.length?commentCards.map((a)=>`${!a.linked&&a.order===annotations.length+1?'<div class="panel-description" style="padding:10px 4px 2px">Outros comentários do espelho</div>':''}<article class="comment-card ${a.linked?'':'comment-card-unlinked'}" data-comment="${esc(a.id)}" data-kind="${a.linked?'linked':'unlinked'}" tabindex="0"><div class="comment-card-head">${COMP_SHORT.includes(a.competency)?`<span class="comp-badge ${annotationColor(a.competency)}">${esc(a.competency)}</span>`:'<span></span>'}<span style="font-size:9px;color:var(--muted)">${a.order}/${commentCards.length}</span></div>${a.quote?`<div class="comment-quote">“${esc(a.quote)}”</div>`:''}<div class="comment-copy">${a.category&&!/^(?:coment[aá]rio(?: geral| do corretor| da corre[cç][aã]o| extra[ií]do)?|observa[cç][aã]o(?: da corre[cç][aã]o| do corretor)?|feedback|trecho relacionado ao coment[aá]rio|correspond[eê]ncia aproximada)[.!:;—–-]*$/i.test(String(a.category).trim())?`<strong>${esc(a.category)}</strong><br>`:''}${esc(a.comment||'')}${a.suggestion?`<div class=\"comment-copy\" style=\"margin-top:8px\"><strong>Forma corrigida:</strong> ${esc(a.suggestion)}</div>`:''}</div></article>`).join(''):'<div class="empty-state">Ainda não há comentários estruturados para esta redação.</div>';
- function selectAnnotation(id,scrollToMark=false){document.querySelectorAll('.competency-mark,.comment-card').forEach(el=>el.classList.toggle('selected',el.dataset.annotation===id||el.dataset.comment===id));const mark=$(`mark-${id}`),comment=document.querySelector(`[data-comment="${CSS.escape(id)}"]`);if(scrollToMark&&mark)mark.scrollIntoView({behavior:'smooth',block:'center'});if(comment)comment.scrollIntoView({behavior:'smooth',block:'nearest'});}
+ $('readerComments').innerHTML=commentCards.length?commentCards.map((a)=>`${!a.linked&&a.order===annotations.length+1?'<div class="panel-description" style="padding:10px 4px 2px">Outros comentários do espelho</div>':''}<article class="comment-card ${a.linked?'':'comment-card-unlinked'}" data-comment="${esc(a.id)}" data-kind="${a.linked?'linked':'unlinked'}" tabindex="0"><div class="comment-card-head">${COMP_SHORT.includes(a.competency)?`<span class="comp-badge ${annotationColor(a.competency)}">${esc(a.competency)}</span>`:'<span></span>'}<span style="font-size:9px;color:var(--muted)">${a.order}/${commentCards.length}</span></div>${a.quote?`<div class="comment-quote">“${esc(a.quote)}”</div>`:''}<div class="comment-copy">${a.category&&!/^(?:coment[aá]rio(?: geral| do corretor| da corre[cç][aã]o| extra[ií]do)?|observa[cç][aã]o(?: da corre[cç][aã]o| do corretor)?|feedback|trecho relacionado ao coment[aá]rio|correspond[eê]ncia aproximada)[.!:;—–-]*$/i.test(String(a.category).trim())?`<strong>${esc(a.category)}</strong><br>`:''}${esc(a.comment||'').replace(/\n/g,'<br>')}${a.suggestion&&!String(a.comment||'').includes(a.suggestion)?`<div class=\"comment-copy\" style=\"margin-top:8px\"><strong>Forma sugerida:</strong> ${esc(a.suggestion)}</div>`:''}${a.studySuggestion?`<div class=\"comment-copy\" style=\"margin-top:8px\"><strong>Para aprofundar:</strong> ${esc(a.studySuggestion)}</div>`:''}</div></article>`).join(''):'<div class="empty-state">Ainda não há comentários estruturados para esta redação.</div>';
+ function selectAnnotation(id,scrollToMark=false){const cardData=commentCards.find(x=>x.id===id),markId=cardData?.linkedTo||id;document.querySelectorAll('.competency-mark,.comment-card').forEach(el=>el.classList.toggle('selected',el.dataset.annotation===markId||el.dataset.comment===id));const mark=$(`mark-${markId}`),comment=document.querySelector(`[data-comment="${CSS.escape(id)}"]`);if(scrollToMark&&mark)mark.scrollIntoView({behavior:'smooth',block:'center'});if(comment)comment.scrollIntoView({behavior:'smooth',block:'nearest'});}
  $('readerEssayText').querySelectorAll('[data-annotation]').forEach(mark=>{mark.addEventListener('click',()=>selectAnnotation(mark.dataset.annotation,false));mark.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();selectAnnotation(mark.dataset.annotation,false);}});});$('readerComments').querySelectorAll('[data-comment]').forEach(card=>{const choose=()=>selectAnnotation(card.dataset.comment,card.dataset.kind==='linked');card.addEventListener('click',choose);card.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();choose();}});});
- const errors=Array.isArray(e.errorSummary)?e.errorSummary:[];$('readerErrorRows').innerHTML=COMP_SHORT.map((comp,i)=>{const er=errors.find(x=>x.competency===comp);return `<tr><td><span class="comp-badge ${annotationColor(comp)}">${comp}</span><div class="study-tip">${esc(COMP_NAMES[i])}</div></td><td><strong>${e.comps&&Number.isFinite(e.comps[i])?e.comps[i]:'—'}/200</strong></td><td>${er&&Array.isArray(er.patterns)&&er.patterns.length?esc(er.patterns.map(p=>`${p.name}${Number(p.count)>1?` (${p.count} ocorrências)`:''}`).join(' · ')):esc(er?.mainError||'Nenhum padrão registrado.')}${er&&(!er.patterns||!er.patterns.length)&&Number(er.count)>1?` <span class="study-tip">· ${Number(er.count)} ocorrências</span>`:''}</td></tr>`;}).join('');$('readerFeedback').textContent=e.notes||'O arquivo não incluiu um feedback geral.';
+ const errors=Array.isArray(e.errorSummary)?e.errorSummary:[];$('readerErrorRows').innerHTML=COMP_SHORT.map((comp,i)=>{const er=errors.find(x=>x.competency===comp);return `<tr><td><span class="comp-badge ${annotationColor(comp)}">${comp}</span><div class="study-tip">${esc(COMP_NAMES[i])}</div></td><td><strong>${e.comps&&Number.isFinite(e.comps[i])?e.comps[i]:'—'}/200</strong></td><td>${er&&Array.isArray(er.patterns)&&er.patterns.length?esc(er.patterns.map(p=>`${p.name}${Number(p.count)>1?` (${p.count} ocorrências)`:''}`).join(' · ')):esc(er?.mainError||'Nenhum padrão registrado.')}${er&&(!er.patterns||!er.patterns.length)&&Number(er.count)>1?` <span class="study-tip">· ${Number(er.count)} ocorrências</span>`:''}</td></tr>`;}).join('');const strengthItems=Array.isArray(e.strengths)?e.strengths.filter(Boolean):[];$('readerFeedback').innerHTML=`<div>${esc(e.notes||'O arquivo não incluiu um feedback geral.').replace(/\n/g,'<br>')}</div>${strengthItems.length?`<div style=\"margin-top:10px\"><strong>Pontos fortes</strong><ul style=\"margin:6px 0 0;padding-left:18px\">${strengthItems.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}`;
  $('pageEyebrow').textContent='LEITURA INTERATIVA';$('pageTitle').textContent='Sua redação, trecho por trecho.';$('pageSubtitle').textContent='Clique nas marcações coloridas para consultar os comentários.';
 }
 function showEssay(id){const e=essays.find(x=>x.id===id);if(!e)return;renderReader(id);setView('reader');renderReader(id);}
