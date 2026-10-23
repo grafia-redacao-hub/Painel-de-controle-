@@ -582,7 +582,6 @@ const SAMPLE = [
 const $ = id => document.getElementById(id);
 let essays = loadData();
 let goal = loadGoal();
-let taskStatuses = loadTaskStatuses();
 let pendingImport = null;
 let editingId = null;
 function loadData(){
@@ -605,7 +604,7 @@ function loadData(){
 function loadGoal(){try{const g=Number(localStorage.getItem('escrita_goal_v1'));return g>=0&&g<=1000?g:900;}catch(e){return 900;}}
 const TASK_STATUS_STORAGE_KEY='grafia_task_statuses_v1';
 function loadTaskStatuses(){try{const value=JSON.parse(localStorage.getItem(TASK_STATUS_STORAGE_KEY)||'{}');return value&&typeof value==='object'&&!Array.isArray(value)?value:{};}catch(e){return {};}}
-function saveTaskStatuses(){try{localStorage.setItem(TASK_STATUS_STORAGE_KEY,JSON.stringify(taskStatuses||{}));return true;}catch(e){return false;}}
+function saveTaskStatuses(statuses){try{const value=statuses&&typeof statuses==='object'&&!Array.isArray(statuses)?statuses:{};localStorage.setItem(TASK_STATUS_STORAGE_KEY,JSON.stringify(value));return true;}catch(e){return false;}}
 function saveData(){try{localStorage.setItem('escrita_essays_v1',JSON.stringify(essays));return true;}catch(e){toast('Não foi possível salvar','O navegador pode estar bloqueando o armazenamento local ou sem espaço. Libere espaço antes de tentar novamente.');return false;}}
 function saveGoalLocal(){try{localStorage.setItem('escrita_goal_v1',String(goal));}catch(e){}}
 function isSampleOnly(){return essays.length>0&&essays.every(e=>e.source==='sample');}
@@ -667,16 +666,17 @@ $('confirmDeleteEssay').addEventListener('click',()=>{
  if(pendingDeleteEssayId===null)return;
  const id=String(pendingDeleteEssayId);
  const beforeEssays=essays;
- const beforeStatuses={...taskStatuses};
+ const beforeStatuses=loadTaskStatuses();
+ const nextStatuses={...beforeStatuses};
  const nextEssays=essays.filter(x=>String(x.id)!==id);
  if(nextEssays.length===essays.length){closeDeleteEssayModal();toast('Redação não encontrada','Atualize a biblioteca e tente novamente.');return;}
+ Object.keys(nextStatuses).forEach(k=>{if(k.startsWith(id+'::')||k.includes('::'+id+'::'))delete nextStatuses[k];});
  essays=nextEssays;
- Object.keys(taskStatuses).forEach(k=>{if(k.startsWith(id+'::')||k.includes('::'+id+'::'))delete taskStatuses[k];});
  if(!saveData()){
-  essays=beforeEssays;taskStatuses=beforeStatuses;closeDeleteEssayModal();render();
+  essays=beforeEssays;closeDeleteEssayModal();render();
   toast('Não foi possível excluir','O navegador não conseguiu salvar a alteração. Libere espaço e tente novamente.');return;
  }
- const statusesSaved=saveTaskStatuses();
+ const statusesSaved=saveTaskStatuses(nextStatuses);
  if(String(activeEssayId)===id){activeEssayId=null;setView('essays');}
  closeDeleteEssayModal();render();
  toast('Redação removida',statusesSaved?'A redação importada e os dados associados foram removidos do histórico.':'A redação foi removida. Alguns estados de revisão não puderam ser atualizados pelo navegador.');
@@ -693,7 +693,7 @@ $('closeModal').addEventListener('click',closeModal);$('cancelModal').addEventLi
 $('topImportBtn').addEventListener('click',()=>setView('import'));$('manualAddBtn').addEventListener('click',()=>setView('import'));$('editGoal').addEventListener('click',()=>{setView('settings');$('settingsGoal').focus();});
 $('essayForm').addEventListener('submit',e=>{e.preventDefault();const vals=['C1','C2','C3','C4','C5'].map(c=>{const v=$('f'+c).value;return v===''?null:Number(v);});const previous=editingId?essays.find(x=>x.id===editingId)||{}:{};const entry={...previous,addedAt:previous.addedAt||Date.now(),id:editingId||previous.id||'e'+Date.now().toString(36),theme:$('fTheme').value.trim(),date:$('fDate').value,score:Number($('fScore').value),comps:vals,notes:$('fNotes').value.trim(),source:$('fSource').value==='json'?'json':($('fSource').value==='pdf'?'json':'manual')};if(!entry.theme||!entry.date||!Number.isFinite(entry.score)||entry.score<0||entry.score>1000){toast('Confira os campos','Informe tema, data e uma nota de 0 a 1000.');return;}if(vals.some(v=>v!==null&&(!Number.isFinite(v)||v<0||v>200))){toast('Confira as competências','Cada pontuação deve estar entre 0 e 200.');return;}if(editingId){const old=essays.find(x=>x.id===editingId);if(old&&old.source==='sample')essays=essays.filter(x=>x.source!=='sample'&&x.id!==editingId);const idx=essays.findIndex(x=>x.id===editingId);if(idx>=0){entry.id=editingId;essays[idx]=entry;}else{entry.id=editingId;essays.push(entry);}}else{if(isSampleOnly())essays=[];essays.push(entry);}editingId=null;saveData();render();closeModal();setView('essays');toast('Redação salva','A correção foi adicionada ao seu histórico local.');});
 $('essaySearch').addEventListener('input',renderLibrary);$('clearDemo').addEventListener('click',()=>{if(!isSampleOnly())return;essays=[];saveData();render();toast('Exemplos removidos','Importe um PDF ou adicione uma redação para começar.');});
-$('saveGoal').addEventListener('click',()=>{const v=Number($('settingsGoal').value);if(!Number.isFinite(v)||v<0||v>1000){toast('Meta inválida','Escolha um valor entre 0 e 1000.');return;}goal=Math.round(v);saveGoalLocal();render();toast('Meta atualizada','Sua meta pessoal foi salva neste dispositivo.');});$('resetData').addEventListener('click',()=>{if(!confirm('Apagar as redações salvas neste navegador e restaurar os exemplos?'))return;essays=SAMPLE.map(x=>({...x}));taskStatuses={};goal=900;saveData();saveTaskStatuses();saveGoalLocal();render();setView('overview');toast('Painel restaurado','Os exemplos demonstrativos foram restaurados.');});$('exportBtn').addEventListener('click',exportCsv);$('settingsExport').addEventListener('click',exportCsv);$('settingsExportJson').addEventListener('click',exportHistoryJson);$('settingsImportBtn').addEventListener('click',()=>$('settingsImportFile').click());$('settingsImportFile').addEventListener('change',handleHistoryImportFile);
+$('saveGoal').addEventListener('click',()=>{const v=Number($('settingsGoal').value);if(!Number.isFinite(v)||v<0||v>1000){toast('Meta inválida','Escolha um valor entre 0 e 1000.');return;}goal=Math.round(v);saveGoalLocal();render();toast('Meta atualizada','Sua meta pessoal foi salva neste dispositivo.');});$('resetData').addEventListener('click',()=>{if(!confirm('Apagar as redações salvas neste navegador e restaurar os exemplos?'))return;essays=SAMPLE.map(x=>({...x}));goal=900;saveData();saveTaskStatuses({});saveGoalLocal();render();setView('overview');toast('Painel restaurado','Os exemplos demonstrativos foram restaurados.');});$('exportBtn').addEventListener('click',exportCsv);$('settingsExport').addEventListener('click',exportCsv);$('settingsExportJson').addEventListener('click',exportHistoryJson);$('settingsImportBtn').addEventListener('click',()=>$('settingsImportFile').click());$('settingsImportFile').addEventListener('change',handleHistoryImportFile);
 function exportCsv(){
  if(!essays.length){toast('Sem dados','Adicione uma redação antes de exportar.');return;}
  // O CSV mantém colunas legíveis e inclui também o registro integral serializado,
@@ -712,7 +712,7 @@ function exportHistoryJson(){
  if(!essays.length){toast('Sem dados','Adicione ou importe uma redação antes de exportar.');return;}
  try {
   const clone=value=>JSON.parse(JSON.stringify(value));
-  const backup={format:'grafia.history',version:4,schema:'grafia.history/v4',exportedAt:new Date().toISOString(),app:'Grafia',appVersion:4,portable:true,goal,essays:clone(essays),taskStatuses:clone(taskStatuses||{}),chartStyle,metadata:{essayCount:essays.length,includesFullEssayText:true,includesScores:true,includesAnnotations:true,includesComments:true,includesDiagnostics:true,includesStudyPlan:true,deviceIndependent:true}};
+  const backup={format:'grafia.history',version:4,schema:'grafia.history/v4',exportedAt:new Date().toISOString(),app:'Grafia',appVersion:4,portable:true,goal,essays:clone(essays),taskStatuses:clone(loadTaskStatuses()),chartStyle,metadata:{essayCount:essays.length,includesFullEssayText:true,includesScores:true,includesAnnotations:true,includesComments:true,includesDiagnostics:true,includesStudyPlan:true,deviceIndependent:true}};
   const json=JSON.stringify(backup,null,2);
   downloadBlob(json,'historico_grafia_backup_completo.json','application/json;charset=utf-8');
   toast('Download solicitado',`O backup JSON foi enviado ao navegador com ${essays.length} redação(ões). Confira a pasta Downloads ou o gerenciador de arquivos do dispositivo.`);
@@ -776,11 +776,11 @@ async function handleHistoryImportFile(event){
   const preview={rows:additionsOnly,all:valid,finalEssays,isCompleteBackup,goal:incomingGoal,taskStatuses:incomingTaskStatuses,chartStyle:incomingChartStyle,fileName:file.name,additions,updates,duplicates};
   $('settingsImportResult').innerHTML=`<article class="panel glass"><div class="panel-title">Prévia da importação</div><div class="panel-description" style="margin:7px 0 12px">Arquivo: ${esc(file.name)}</div><div class="parse-alert ok">${valid.length} registro(s) reconhecido(s): ${additions} novo(s), ${updates} atualizado(s) com o backup completo e ${duplicates} duplicado(s) ignorado(s). ${isCompleteBackup?'Os registros correspondentes serão atualizados com todos os detalhes do arquivo.':'Os registros atuais não serão substituídos.'}</div><div class="panel-description" style="margin-bottom:12px">${valid.slice(0,8).map(e=>'• '+esc(e.theme)+' — '+esc(e.date||'sem data')+' — '+(Number(e.score)||0)+'/1000').join('<br>')}${valid.length>8?`<br>… e mais ${valid.length-8} registro(s).`:''}</div><div class="settings-actions"><button class="primary-btn" id="confirmHistoryImport">${isCompleteBackup?'Atualizar e importar histórico':'Adicionar ao histórico'}</button><button class="secondary-btn" id="cancelHistoryImport">Cancelar</button></div></article>`;
   $('confirmHistoryImport').addEventListener('click',()=>{
-   const beforeEssays=essays,beforeStatuses={...taskStatuses},beforeGoal=goal;
+   const beforeEssays=essays,beforeStatuses=loadTaskStatuses(),beforeGoal=goal;
    essays=preview.isCompleteBackup?preview.finalEssays:[...(isSampleOnly()?[]:essays),...preview.rows];
    if(!saveData()){essays=beforeEssays;render();return;}
    if(preview.goal!==null&&preview.goal>=0&&preview.goal<=1000){goal=Math.round(preview.goal);saveGoalLocal();}
-   if(preview.taskStatuses){taskStatuses={...taskStatuses,...preview.taskStatuses};saveTaskStatuses();}
+   if(preview.taskStatuses){saveTaskStatuses({...loadTaskStatuses(),...preview.taskStatuses});}
    if(preview.chartStyle){chartStyle=preview.chartStyle;try{localStorage.setItem('grafia_chart_style',chartStyle);}catch(e){}}
    $('settingsImportResult').innerHTML=`<div class="parse-alert ok">Importação concluída: ${preview.additions} nova(s) redação(ões), ${preview.updates} registro(s) atualizado(s) com dados completos e ${preview.duplicates} duplicado(s) ignorado(s). ${preview.goal!==null?'A meta do backup também foi recuperada.':''}</div>`;
    render();toast('Histórico importado','Os dados do arquivo foram integrados neste dispositivo.');
