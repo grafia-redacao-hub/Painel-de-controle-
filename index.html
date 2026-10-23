@@ -445,7 +445,7 @@ textarea.field { min-height:78px;resize:vertical; }
       </section>
 
       <section class="view" id="view-settings">
-        <article class="settings-card glass"><div class="panel-title">Preferências do painel</div><div class="panel-description" style="margin-bottom:18px">Ajuste sua meta e controle seus dados locais.</div><div class="settings-line"><div><strong>Meta de nota</strong><p>Nota total que você quer alcançar no ENEM.</p></div><div style="display:flex;gap:8px;align-items:center"><input id="settingsGoal" class="field" type="number" min="0" max="1000" step="10" style="width:100px"><button class="secondary-btn" id="saveGoal">Salvar</button></div></div><div class="settings-line"><div><strong>Exportar histórico completo</strong><p>Baixe um arquivo JSON com redações, notas, grifos, comentários e diagnósticos para guardar ou importar depois.</p></div><div class="settings-actions"><button class="secondary-btn" id="settingsExportJson">Exportar JSON</button><button class="secondary-btn" id="settingsExport">Exportar CSV</button></div></div><div class="settings-line"><div><strong>Importar histórico exportado</strong><p>Restaure um backup JSON completo do Grafia ou importe o CSV exportado anteriormente. Os registros serão combinados com os atuais, evitando duplicações.</p></div><div class="settings-actions"><button class="secondary-btn" id="settingsImportBtn">Importar arquivo</button><input id="settingsImportFile" type="file" accept=".json,.csv,application/json,text/csv,text/plain" hidden></div></div><div id="settingsImportResult" style="margin-top:12px"></div><div class="settings-line"><div><strong>Limpar dados locais</strong><p>Apaga as redações salvas neste navegador e restaura os exemplos.</p></div><button class="secondary-btn" id="resetData">Restaurar exemplos</button></div></article>
+        <article class="settings-card glass"><div class="panel-title">Preferências do painel</div><div class="panel-description" style="margin-bottom:18px">Ajuste sua meta e controle seus dados locais.</div><div class="settings-line"><div><strong>Meta de nota</strong><p>Nota total que você quer alcançar no ENEM.</p></div><div style="display:flex;gap:8px;align-items:center"><input id="settingsGoal" class="field" type="number" min="0" max="1000" step="10" style="width:100px"><button class="secondary-btn" id="saveGoal">Salvar</button></div></div><div class="settings-line"><div><strong>Exportar histórico completo</strong><p>Baixe um backup portátil com todos os campos salvos de cada redação, compatível entre celular e computador.</p></div><div class="settings-actions"><button class="secondary-btn" id="settingsExportJson">Exportar JSON</button><button class="secondary-btn" id="settingsExport">Exportar CSV</button></div></div><div class="settings-line"><div><strong>Importar histórico exportado</strong><p>Transfira o histórico entre celular e computador usando JSON ou CSV completo. Os dados serão combinados e os registros correspondentes serão atualizados com todos os detalhes do backup.</p></div><div class="settings-actions"><button class="secondary-btn" id="settingsImportBtn">Importar arquivo</button><input id="settingsImportFile" type="file" accept=".json,.csv,application/json,text/csv,text/plain" hidden></div></div><div id="settingsImportResult" style="margin-top:12px"></div><div class="settings-line"><div><strong>Limpar dados locais</strong><p>Apaga as redações salvas neste navegador e restaura os exemplos.</p></div><button class="secondary-btn" id="resetData">Restaurar exemplos</button></div></article>
         <article class="settings-card glass"><div class="panel-title">Privacidade e limites</div><div class="settings-line"><div><strong>Armazenamento</strong><p>As redações são guardadas no armazenamento local do navegador deste dispositivo.</p></div><span class="pill">Local</span></div><div class="settings-line"><div><strong>Leitura do arquivo estruturado</strong><p>O painel importa arquivos JSON estruturados gerados junto da correção. Não faz a leitura automática de PDFs; confira os dados extraídos antes de salvar.</p></div><span class="pill">Experimental</span></div><div class="settings-line"><div><strong>Interpretação da correção</strong><p>Se os comentários da correção estiverem em texto, eles não substituem o julgamento do corretor: confira a nota e os dados extraídos.</p></div><span class="pill">Revisão</span></div></article>
       </section>
       <div class="footer-note">Feito para acompanhar sua escrita com calma. Os dados deste painel são seus.</div>
@@ -582,11 +582,31 @@ const SAMPLE = [
 const $ = id => document.getElementById(id);
 let essays = loadData();
 let goal = loadGoal();
+let taskStatuses = loadTaskStatuses();
 let pendingImport = null;
 let editingId = null;
-function loadData(){try{const x=JSON.parse(localStorage.getItem('escrita_essays_v1'));return Array.isArray(x)?x.map(e=>{const {studyPlan,...rest}=e;const c=Array.isArray(rest.comps)?rest.comps:[];const valid=c.length===5&&c.every(v=>Number.isFinite(Number(v))&&Number(v)>=0&&Number(v)<=200);return valid?{...rest,comps:c.map(Number),score:c.map(Number).reduce((a,b)=>a+b,0)}:rest;}):SAMPLE.map(x=>({...x}));}catch(e){return SAMPLE.map(x=>({...x}));}}
+function loadData(){
+ try{
+  const stored=JSON.parse(localStorage.getItem('escrita_essays_v1'));
+  return Array.isArray(stored)?stored.filter(e=>e&&typeof e==='object').map(e=>{
+   // Preserve every stored field, including studyPlan and any future metadata.
+   const row={...e};
+   const comps=Array.isArray(row.comps)?row.comps:[];
+   const hasFiveScores=comps.length===5&&comps.every(v=>v!==null&&v!==''&&v!==undefined&&Number.isFinite(Number(v))&&Number(v)>=0&&Number(v)<=200);
+   if(hasFiveScores){
+    row.comps=comps.map(Number);
+    const storedScore=Number(row.score);
+    row.score=Number.isFinite(storedScore)&&storedScore>=0&&storedScore<=1000?storedScore:row.comps.reduce((a,b)=>a+b,0);
+   }
+   return row;
+  }):SAMPLE.map(x=>({...x}));
+ }catch(e){return SAMPLE.map(x=>({...x}));}
+}
 function loadGoal(){try{const g=Number(localStorage.getItem('escrita_goal_v1'));return g>=0&&g<=1000?g:900;}catch(e){return 900;}}
-function saveData(){try{localStorage.setItem('escrita_essays_v1',JSON.stringify(essays));return true;}catch(e){toast('Não foi possível salvar','O navegador pode estar bloqueando o armazenamento local. Libere espaço ou exporte o CSV antes de tentar novamente.');return false;}}
+const TASK_STATUS_STORAGE_KEY='grafia_task_statuses_v1';
+function loadTaskStatuses(){try{const value=JSON.parse(localStorage.getItem(TASK_STATUS_STORAGE_KEY)||'{}');return value&&typeof value==='object'&&!Array.isArray(value)?value:{};}catch(e){return {};}}
+function saveTaskStatuses(){try{localStorage.setItem(TASK_STATUS_STORAGE_KEY,JSON.stringify(taskStatuses||{}));return true;}catch(e){return false;}}
+function saveData(){try{localStorage.setItem('escrita_essays_v1',JSON.stringify(essays));return true;}catch(e){toast('Não foi possível salvar','O navegador pode estar bloqueando o armazenamento local ou sem espaço. Libere espaço antes de tentar novamente.');return false;}}
 function saveGoalLocal(){try{localStorage.setItem('escrita_goal_v1',String(goal));}catch(e){}}
 function isSampleOnly(){return essays.length>0&&essays.every(e=>e.source==='sample');}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -602,7 +622,7 @@ function renderMetrics(){const latest=latestEssay(),best=bestSkill();$('metricLa
 let chartStyle = (()=>{try{const saved=localStorage.getItem('grafia_chart_style');return ['line','area','bars','points'].includes(saved)?saved:'line';}catch(e){return 'line';}})();
 function updateChartStyleButtons(){document.querySelectorAll('[data-chart-style]').forEach(btn=>{const active=btn.dataset.chartStyle===chartStyle;btn.classList.toggle('active',active);btn.setAttribute('aria-pressed',String(active));});}
 function renderChart(){
- const svg=$('progressChart');chartStyle='line';
+ const svg=$('progressChart');
  if(!essays.length){svg.innerHTML='<text x="300" y="95" text-anchor="middle" class="chart-label">Importe correções para ver sua evolução</text>';$('chartPeriod').textContent='Sem registros';$('chartRange').textContent='0–1000 pontos';return;}
  const rows=[...essays].sort((a,b)=>(a.date||'').localeCompare(b.date||'')||(Number(a.addedAt)||0)-(Number(b.addedAt)||0)).slice(-8);
  $('chartPeriod').textContent=`Últimas ${rows.length} ${rows.length===1?'redação':'redações'}`;
@@ -643,7 +663,24 @@ let pendingDeleteEssayId=null;
 function closeDeleteEssayModal(){pendingDeleteEssayId=null;$('deleteEssayModal').classList.remove('open');}
 function deleteEssay(id){const e=essays.find(x=>String(x.id)===String(id));if(!e)return;pendingDeleteEssayId=String(e.id);$('deleteEssayTitle').textContent='Remover redação do histórico?';$('deleteEssaySubtitle').textContent='Você está prestes a remover “'+String(e.theme||'Redação sem título')+'”.';$('deleteEssayModal').classList.add('open');}
 $('cancelDelete').addEventListener('click',closeDeleteEssayModal);$('cancelDeleteX').addEventListener('click',closeDeleteEssayModal);$('deleteEssayModal').addEventListener('click',ev=>{if(ev.target===$('deleteEssayModal'))closeDeleteEssayModal();});
-$('confirmDeleteEssay').addEventListener('click',()=>{if(pendingDeleteEssayId===null)return;const id=pendingDeleteEssayId;const before=essays;essays=essays.filter(x=>String(x.id)!==String(id));if(essays.length===before.length){closeDeleteEssayModal();toast('Redação não encontrada','Atualize o histórico e tente novamente.');return;}Object.keys(taskStatuses).forEach(k=>{if(k.startsWith(id+'::'))delete taskStatuses[k];});if(String(activeEssayId)===id){activeEssayId=null;setView('essays');}if(!saveData()){essays=before;closeDeleteEssayModal();render();return;}saveTaskStatuses();closeDeleteEssayModal();render();toast('Redação removida','A redação e os dados associados foram removidos do histórico.');});
+$('confirmDeleteEssay').addEventListener('click',()=>{
+ if(pendingDeleteEssayId===null)return;
+ const id=String(pendingDeleteEssayId);
+ const beforeEssays=essays;
+ const beforeStatuses={...taskStatuses};
+ const nextEssays=essays.filter(x=>String(x.id)!==id);
+ if(nextEssays.length===essays.length){closeDeleteEssayModal();toast('Redação não encontrada','Atualize a biblioteca e tente novamente.');return;}
+ essays=nextEssays;
+ Object.keys(taskStatuses).forEach(k=>{if(k.startsWith(id+'::')||k.includes('::'+id+'::'))delete taskStatuses[k];});
+ if(!saveData()){
+  essays=beforeEssays;taskStatuses=beforeStatuses;closeDeleteEssayModal();render();
+  toast('Não foi possível excluir','O navegador não conseguiu salvar a alteração. Libere espaço e tente novamente.');return;
+ }
+ const statusesSaved=saveTaskStatuses();
+ if(String(activeEssayId)===id){activeEssayId=null;setView('essays');}
+ closeDeleteEssayModal();render();
+ toast('Redação removida',statusesSaved?'A redação importada e os dados associados foram removidos do histórico.':'A redação foi removida. Alguns estados de revisão não puderam ser atualizados pelo navegador.');
+});
 function renderSettings(){$('settingsGoal').value=goal;}
 function setView(name){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id==='view-'+name));document.querySelectorAll('.nav-btn[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));const titles={overview:['SEU PAINEL PESSOAL','Sua evolução, em perspectiva.','Cada redação é um passo a mais rumo à sua melhor versão.'],essays:['SEU ARQUIVO','Sua biblioteca de redações.','Reúna suas correções e acompanhe sua jornada.'],skills:['ANÁLISE DE DESEMPENHO','Entenda suas competências.','Transforme notas em próximos passos de estudo.'],study:['PADRÕES','Padrões das suas correções.','Veja os tipos de erro que se repetem nas redações importadas.'],reader:['LEITURA INTERATIVA','Sua redação, trecho por trecho.','Clique nas marcações coloridas para consultar os comentários.'],import:['GRAFIA · BETA','Organize suas correções com a Grafia.','Traga conversas e redações, confira os dados e escolha o que salvar.'],settings:['CONFIGURAÇÕES','Seu painel, do seu jeito.','Controle sua meta e seus dados locais.']};const t=titles[name]||titles.overview;$('pageEyebrow').textContent=t[0];$('pageTitle').textContent=t[1];$('pageSubtitle').textContent=t[2];window.scrollTo({top:0,behavior:'auto'});}
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.goto)));
@@ -675,10 +712,10 @@ function exportHistoryJson(){
  if(!essays.length){toast('Sem dados','Adicione ou importe uma redação antes de exportar.');return;}
  try {
   const clone=value=>JSON.parse(JSON.stringify(value));
-  const backup={format:'grafia.history',version:3,exportedAt:new Date().toISOString(),app:'Grafia',goal,essays:clone(essays),taskStatuses:clone(taskStatuses||{}),chartStyle,metadata:{essayCount:essays.length,includesFullEssayText:true,includesAnnotations:true,includesComments:true,includesDiagnostics:true}};
+  const backup={format:'grafia.history',version:4,schema:'grafia.history/v4',exportedAt:new Date().toISOString(),app:'Grafia',appVersion:4,portable:true,goal,essays:clone(essays),taskStatuses:clone(taskStatuses||{}),chartStyle,metadata:{essayCount:essays.length,includesFullEssayText:true,includesScores:true,includesAnnotations:true,includesComments:true,includesDiagnostics:true,includesStudyPlan:true,deviceIndependent:true}};
   const json=JSON.stringify(backup,null,2);
   downloadBlob(json,'historico_grafia_backup_completo.json','application/json;charset=utf-8');
-  toast('Backup preparado',`O arquivo contém ${essays.length} redação(ões), com todos os campos armazenados no histórico.`);
+  toast('Download solicitado',`O backup JSON foi enviado ao navegador com ${essays.length} redação(ões). Confira a pasta Downloads ou o gerenciador de arquivos do dispositivo.`);
  } catch(err){toast('Falha na exportação',`Não foi possível preparar o backup: ${err.message||'erro desconhecido'}`);}
 }
 function parseHistoryCsv(source){
@@ -692,21 +729,93 @@ function parseHistoryCsv(source){
 async function handleHistoryImportFile(event){
  const file=event.target.files&&event.target.files[0];event.target.value='';if(!file)return;
  try{
-  const source=await file.text();let incoming=[],incomingGoal=null,incomingTaskStatuses=null,incomingChartStyle=null;
-  if(/\\.csv$/i.test(file.name)||file.type==='text/csv')incoming=parseHistoryCsv(source);
-  else {const raw=JSON.parse(source);if(raw&&raw.format==='grafia.history'&&Array.isArray(raw.essays)){incomingGoal=Number.isFinite(Number(raw.goal))?Number(raw.goal):null;incomingTaskStatuses=raw.taskStatuses&&typeof raw.taskStatuses==='object'?raw.taskStatuses:null;incomingChartStyle=['line','area','bars','points'].includes(raw.chartStyle)?raw.chartStyle:null;incoming=raw.essays.map(e=>JSON.parse(JSON.stringify(e)));}
-   else {const arr=Array.isArray(raw)?raw:(Array.isArray(raw.corrections)?raw.corrections:null);incoming=(arr||[raw]).map(r=>normalizeCorrection(r));}}
+  const source=await file.text();let incoming=[],incomingGoal=null,incomingTaskStatuses=null,incomingChartStyle=null,isCompleteBackup=false;
+  const isCsv=/\.csv$/i.test(file.name)||/text\/csv/i.test(file.type||'');
+  if(isCsv){
+   const firstLine=source.replace(/^\uFEFF/,'').split(/\r?\n/,1)[0]||'';
+   isCompleteBackup=/dados completos json/i.test(firstLine);
+   incoming=parseHistoryCsv(source);
+  }else{
+   const raw=JSON.parse(source);
+   if(raw&&raw.format==='grafia.history'&&Array.isArray(raw.essays)){
+    isCompleteBackup=true;
+    incomingGoal=Number.isFinite(Number(raw.goal))?Number(raw.goal):null;
+    incomingTaskStatuses=raw.taskStatuses&&typeof raw.taskStatuses==='object'&&!Array.isArray(raw.taskStatuses)?raw.taskStatuses:null;
+    incomingChartStyle=['line','area','bars','points'].includes(raw.chartStyle)?raw.chartStyle:null;
+    incoming=raw.essays.map(e=>JSON.parse(JSON.stringify(e)));
+   }else{
+    const arr=Array.isArray(raw)?raw:(Array.isArray(raw.corrections)?raw.corrections:null);
+    incoming=(arr||[raw]).map(r=>normalizeCorrection(r));
+   }
+  }
   if(!incoming.length)throw new Error('Não encontrei redações reconhecíveis nesse arquivo.');
-  const valid=incoming.filter(e=>e&&String(e.theme||'').trim()).map(e=>{const comps=Array.isArray(e.comps)?e.comps:(e.competencies?['C1','C2','C3','C4','C5'].map(c=>Number(e.competencies[c]?.score)):[]);const safeComps=comps.length===5?comps.map(v=>v===null||v===''?null:Number(v)): [null,null,null,null,null];const score=safeComps.every(v=>Number.isFinite(v))?safeComps.reduce((a,b)=>a+b,0):Number(e.score)||0;return {...e,id:String(e.id||('imp-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8))),theme:String(e.theme).trim(),date:String(e.date||''),score,comps:safeComps,source:e.source||'json'};});
+  const valid=incoming.filter(e=>e&&String(e.theme||'').trim()).map((e,i)=>{
+   const comps=Array.isArray(e.comps)?e.comps:(e.competencies?['C1','C2','C3','C4','C5'].map(c=>{const v=e.competencies[c];return v&&typeof v==='object'?(v.score??v.points??v.nota):v;}):[]);
+   const safeComps=comps.length===5?comps.map(v=>v===null||v===''||v===undefined?null:Number(v)):[null,null,null,null,null];
+   const storedScore=Number(e.score);
+   const score=Number.isFinite(storedScore)&&storedScore>=0&&storedScore<=1000?storedScore:(safeComps.every(v=>Number.isFinite(v))?safeComps.reduce((a,b)=>a+b,0):0);
+   const id=String(e.id??'').trim()||('imp-'+Date.now().toString(36)+'-'+i+'-'+Math.random().toString(36).slice(2,8));
+   return {...JSON.parse(JSON.stringify(e)),id,theme:String(e.theme).trim(),date:String(e.date||''),score,comps:safeComps,source:e.source||'json'};
+  });
   if(!valid.length)throw new Error('O arquivo não contém registros com tema válido.');
-  const currentEssays=isSampleOnly()?[]:essays;const existingKeys=new Set(currentEssays.map(e=>`${String(e.theme||'').trim().toLocaleLowerCase('pt-BR')}|${String(e.date||'')}`));const newOnes=valid.filter(e=>!currentEssays.some(old=>String(old.id)===String(e.id))&&!existingKeys.has(`${e.theme.toLocaleLowerCase('pt-BR')}|${e.date}`));const dupes=valid.length-newOnes.length;
-  const preview={rows:newOnes,all:valid,goal:incomingGoal,taskStatuses:incomingTaskStatuses,chartStyle:incomingChartStyle,fileName:file.name,duplicates:dupes};
-  $('settingsImportResult').innerHTML=`<article class="panel glass"><div class="panel-title">Prévia da importação</div><div class="panel-description" style="margin:7px 0 12px">Arquivo: ${esc(file.name)}</div><div class="parse-alert ok">${valid.length} registro(s) reconhecido(s). ${newOnes.length} novo(s) será(ão) adicionado(s) e ${dupes} duplicado(s) será(ão) ignorado(s). Os registros atuais não serão apagados.</div><div class="panel-description" style="margin-bottom:12px">${valid.slice(0,8).map(e=>'• '+esc(e.theme)+' — '+esc(e.date||'sem data')+' — '+(Number(e.score)||0)+'/1000').join('<br>')}${valid.length>8?`<br>… e mais ${valid.length-8} registro(s).`:''}</div><div class="settings-actions"><button class="primary-btn" id="confirmHistoryImport" ${newOnes.length?'':'disabled'}>Adicionar ao histórico</button><button class="secondary-btn" id="cancelHistoryImport">Cancelar</button></div></article>`;
-  $('confirmHistoryImport').addEventListener('click',()=>{const before=essays;essays=[...(isSampleOnly()?[]:essays),...preview.rows];if(!saveData()){essays=before;render();return;}if(preview.goal!==null&&preview.goal>=0&&preview.goal<=1000){goal=Math.round(preview.goal);saveGoalLocal();}if(preview.taskStatuses){taskStatuses={...taskStatuses,...preview.taskStatuses};saveTaskStatuses();}if(preview.chartStyle){chartStyle=preview.chartStyle;try{localStorage.setItem('grafia_chart_style',chartStyle);}catch(e){}}$('settingsImportResult').innerHTML=`<div class="parse-alert ok">Importação concluída: ${preview.rows.length} nova(s) redação(ões) adicionada(s); ${preview.duplicates} duplicada(s) ignorada(s). ${preview.goal!==null?'A meta do backup também foi recuperada.':''}</div>`;render();toast('Histórico importado','Os dados foram salvos neste navegador.');});
+  const currentEssays=isSampleOnly()?[]:essays;
+  let finalEssays=[...currentEssays];let additions=0,updates=0,duplicates=0;const additionsOnly=[];
+  for(const entry of valid){
+   const byId=finalEssays.findIndex(old=>String(old.id)===String(entry.id));
+   const byThemeDate=finalEssays.findIndex(old=>String(old.theme||'').trim().toLocaleLowerCase('pt-BR')===entry.theme.toLocaleLowerCase('pt-BR')&&String(old.date||'')===entry.date);
+   const matchIndex=byId>=0?byId:(isCompleteBackup?byThemeDate:-1);
+   if(matchIndex>=0){
+    if(isCompleteBackup){
+     // A full portable backup is authoritative for matching records: replace the row
+     // so that text, marks, comments and diagnostics are not lost on the other device.
+     finalEssays[matchIndex]={...finalEssays[matchIndex],...entry,id:entry.id};updates++;
+    }else{duplicates++;}
+   }else if(!isCompleteBackup&&byThemeDate>=0){duplicates++;}
+   else{finalEssays.push(entry);additionsOnly.push(entry);additions++;}
+  }
+  const preview={rows:additionsOnly,all:valid,finalEssays,isCompleteBackup,goal:incomingGoal,taskStatuses:incomingTaskStatuses,chartStyle:incomingChartStyle,fileName:file.name,additions,updates,duplicates};
+  $('settingsImportResult').innerHTML=`<article class="panel glass"><div class="panel-title">Prévia da importação</div><div class="panel-description" style="margin:7px 0 12px">Arquivo: ${esc(file.name)}</div><div class="parse-alert ok">${valid.length} registro(s) reconhecido(s): ${additions} novo(s), ${updates} atualizado(s) com o backup completo e ${duplicates} duplicado(s) ignorado(s). ${isCompleteBackup?'Os registros correspondentes serão atualizados com todos os detalhes do arquivo.':'Os registros atuais não serão substituídos.'}</div><div class="panel-description" style="margin-bottom:12px">${valid.slice(0,8).map(e=>'• '+esc(e.theme)+' — '+esc(e.date||'sem data')+' — '+(Number(e.score)||0)+'/1000').join('<br>')}${valid.length>8?`<br>… e mais ${valid.length-8} registro(s).`:''}</div><div class="settings-actions"><button class="primary-btn" id="confirmHistoryImport">${isCompleteBackup?'Atualizar e importar histórico':'Adicionar ao histórico'}</button><button class="secondary-btn" id="cancelHistoryImport">Cancelar</button></div></article>`;
+  $('confirmHistoryImport').addEventListener('click',()=>{
+   const beforeEssays=essays,beforeStatuses={...taskStatuses},beforeGoal=goal;
+   essays=preview.isCompleteBackup?preview.finalEssays:[...(isSampleOnly()?[]:essays),...preview.rows];
+   if(!saveData()){essays=beforeEssays;render();return;}
+   if(preview.goal!==null&&preview.goal>=0&&preview.goal<=1000){goal=Math.round(preview.goal);saveGoalLocal();}
+   if(preview.taskStatuses){taskStatuses={...taskStatuses,...preview.taskStatuses};saveTaskStatuses();}
+   if(preview.chartStyle){chartStyle=preview.chartStyle;try{localStorage.setItem('grafia_chart_style',chartStyle);}catch(e){}}
+   $('settingsImportResult').innerHTML=`<div class="parse-alert ok">Importação concluída: ${preview.additions} nova(s) redação(ões), ${preview.updates} registro(s) atualizado(s) com dados completos e ${preview.duplicates} duplicado(s) ignorado(s). ${preview.goal!==null?'A meta do backup também foi recuperada.':''}</div>`;
+   render();toast('Histórico importado','Os dados do arquivo foram integrados neste dispositivo.');
+  });
   $('cancelHistoryImport').addEventListener('click',()=>$('settingsImportResult').innerHTML='');
  }catch(err){$('settingsImportResult').innerHTML=`<div class="parse-alert warn"><strong>Não foi possível importar o histórico.</strong><br>${esc(err.message||'Confira o formato do arquivo.')}</div>`;}
 }
-function downloadBlob(content,name,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.rel='noopener';a.style.display='none';document.body.appendChild(a);try{a.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}));}catch(_){a.click();}setTimeout(()=>{a.remove();URL.revokeObjectURL(url);},60000);}
+function downloadBlob(content,name,type){
+ const mime=type||'application/octet-stream';
+ let blob,url;
+ try{
+  blob=content instanceof Blob?content:new Blob([content],{type:mime});
+  if(!window.URL||typeof URL.createObjectURL!=='function')throw new Error('Downloads por arquivo temporário não são compatíveis neste navegador.');
+  url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=name;a.rel='noopener';a.style.position='fixed';a.style.left='-10000px';a.style.width='1px';a.style.height='1px';
+  document.body.appendChild(a);
+  // Call click() directly inside the button gesture; synthetic dispatchEvent clicks
+  // are not consistently treated as downloads on Android/iOS browsers.
+  try{a.click();}catch(clickError){
+   a.remove();
+   const opened=window.open(url,'_blank','noopener');
+   if(!opened)throw clickError;
+  }
+  setTimeout(()=>{a.remove();try{URL.revokeObjectURL(url);}catch(_){}},120000);
+  return true;
+ }catch(err){
+  if(url){try{URL.revokeObjectURL(url);}catch(_){}}
+  // Last-resort fallback for browsers without object-URL support. This keeps the
+  // content downloadable when small; modern desktop/mobile browsers use Blob URL above.
+  try{
+   const dataUrl='data:'+mime+';charset=utf-8,'+encodeURIComponent(String(content));
+   const a=document.createElement('a');a.href=dataUrl;a.download=name;a.rel='noopener';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),1000);return true;
+  }catch(_){throw new Error(err&&err.message?err.message:'O navegador bloqueou a criação do arquivo.');}
+ }
+}
 function normalizeCorrection(raw,essayOverride=''){
  const root=raw&&raw.correction&&typeof raw.correction==='object'?raw.correction:raw;
  if(!root||typeof root!=='object')throw new Error('O conteúdo não contém um objeto de correção.');
