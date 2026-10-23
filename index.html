@@ -657,12 +657,29 @@ $('topImportBtn').addEventListener('click',()=>setView('import'));$('manualAddBt
 $('essayForm').addEventListener('submit',e=>{e.preventDefault();const vals=['C1','C2','C3','C4','C5'].map(c=>{const v=$('f'+c).value;return v===''?null:Number(v);});const previous=editingId?essays.find(x=>x.id===editingId)||{}:{};const entry={...previous,addedAt:previous.addedAt||Date.now(),id:editingId||previous.id||'e'+Date.now().toString(36),theme:$('fTheme').value.trim(),date:$('fDate').value,score:Number($('fScore').value),comps:vals,notes:$('fNotes').value.trim(),source:$('fSource').value==='json'?'json':($('fSource').value==='pdf'?'json':'manual')};if(!entry.theme||!entry.date||!Number.isFinite(entry.score)||entry.score<0||entry.score>1000){toast('Confira os campos','Informe tema, data e uma nota de 0 a 1000.');return;}if(vals.some(v=>v!==null&&(!Number.isFinite(v)||v<0||v>200))){toast('Confira as competências','Cada pontuação deve estar entre 0 e 200.');return;}if(editingId){const old=essays.find(x=>x.id===editingId);if(old&&old.source==='sample')essays=essays.filter(x=>x.source!=='sample'&&x.id!==editingId);const idx=essays.findIndex(x=>x.id===editingId);if(idx>=0){entry.id=editingId;essays[idx]=entry;}else{entry.id=editingId;essays.push(entry);}}else{if(isSampleOnly())essays=[];essays.push(entry);}editingId=null;saveData();render();closeModal();setView('essays');toast('Redação salva','A correção foi adicionada ao seu histórico local.');});
 $('essaySearch').addEventListener('input',renderLibrary);$('clearDemo').addEventListener('click',()=>{if(!isSampleOnly())return;essays=[];saveData();render();toast('Exemplos removidos','Importe um PDF ou adicione uma redação para começar.');});
 $('saveGoal').addEventListener('click',()=>{const v=Number($('settingsGoal').value);if(!Number.isFinite(v)||v<0||v>1000){toast('Meta inválida','Escolha um valor entre 0 e 1000.');return;}goal=Math.round(v);saveGoalLocal();render();toast('Meta atualizada','Sua meta pessoal foi salva neste dispositivo.');});$('resetData').addEventListener('click',()=>{if(!confirm('Apagar as redações salvas neste navegador e restaurar os exemplos?'))return;essays=SAMPLE.map(x=>({...x}));taskStatuses={};goal=900;saveData();saveTaskStatuses();saveGoalLocal();render();setView('overview');toast('Painel restaurado','Os exemplos demonstrativos foram restaurados.');});$('exportBtn').addEventListener('click',exportCsv);$('settingsExport').addEventListener('click',exportCsv);$('settingsExportJson').addEventListener('click',exportHistoryJson);$('settingsImportBtn').addEventListener('click',()=>$('settingsImportFile').click());$('settingsImportFile').addEventListener('change',handleHistoryImportFile);
-function exportCsv(){if(!essays.length){toast('Sem dados','Adicione uma redação antes de exportar.');return;}const header=['Tema','Data','Nota total','C1','C2','C3','C4','C5','Observações','Origem'];const rows=essays.map(e=>[e.theme,e.date,e.score,...(e.comps||[null,null,null,null,null]),e.notes,e.source]);const csv='\uFEFF'+[header,...rows].map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');downloadBlob(csv,'historico_redacoes.csv','text/csv;charset=utf-8');toast('Exportação iniciada','Seu arquivo CSV está pronto para baixar.');}
-function exportHistoryJson(){
+function exportCsv(){
  if(!essays.length){toast('Sem dados','Adicione uma redação antes de exportar.');return;}
- const backup={format:'grafia.history',version:2,exportedAt:new Date().toISOString(),app:'Grafia',goal,essays:essays.map(e=>JSON.parse(JSON.stringify(e))),taskStatuses:JSON.parse(JSON.stringify(taskStatuses)),chartStyle};
- downloadBlob(JSON.stringify(backup,null,2),'historico_grafia_backup.json','application/json;charset=utf-8');
- toast('Backup completo exportado','O JSON preserva textos, notas, grifos, comentários, erros, diagnósticos, plano de estudos e estados de revisão disponíveis.');
+ // O CSV mantém colunas legíveis e inclui também o registro integral serializado,
+ // para não descartar texto, anotações, comentários ou diagnósticos.
+ const header=['Tema','Data','Nota total','C1','C2','C3','C4','C5','Observações','Origem','Texto integral','Erros e diagnósticos','Grifos e comentários','Dados completos JSON'];
+ const rows=essays.map(e=>[
+  e.theme,e.date,e.score,...(Array.isArray(e.comps)?e.comps:[null,null,null,null,null]),e.notes,e.source,
+  e.text||e.essayText||e.essay||'',JSON.stringify({errorSummary:e.errorSummary||[],diagnostics:e.diagnostics||[],overallFeedback:e.overallFeedback||'',studyPlan:e.studyPlan||e.study_plan||[]}),
+  JSON.stringify({annotations:e.annotations||[],unlinkedComments:e.unlinkedComments||[],comments:e.comments||[]}),JSON.stringify(e)
+ ]);
+ const csv='\uFEFF'+[header,...rows].map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
+ downloadBlob(csv,'historico_redacoes_completo.csv','text/csv;charset=utf-8');
+ toast('Exportação iniciada','O CSV inclui colunas legíveis e os dados completos de cada redação. Para restaurar com fidelidade máxima, prefira também o backup JSON.');
+}
+function exportHistoryJson(){
+ if(!essays.length){toast('Sem dados','Adicione ou importe uma redação antes de exportar.');return;}
+ try {
+  const clone=value=>JSON.parse(JSON.stringify(value));
+  const backup={format:'grafia.history',version:3,exportedAt:new Date().toISOString(),app:'Grafia',goal,essays:clone(essays),taskStatuses:clone(taskStatuses||{}),chartStyle,metadata:{essayCount:essays.length,includesFullEssayText:true,includesAnnotations:true,includesComments:true,includesDiagnostics:true}};
+  const json=JSON.stringify(backup,null,2);
+  downloadBlob(json,'historico_grafia_backup_completo.json','application/json;charset=utf-8');
+  toast('Backup preparado',`O arquivo contém ${essays.length} redação(ões), com todos os campos armazenados no histórico.`);
+ } catch(err){toast('Falha na exportação',`Não foi possível preparar o backup: ${err.message||'erro desconhecido'}`);}
 }
 function parseHistoryCsv(source){
  const rows=[];let row=[],cell='',quoted=false;source=source.replace(/^\uFEFF/,'');
@@ -670,7 +687,7 @@ function parseHistoryCsv(source){
  if(cell.length||row.length){row.push(cell);rows.push(row);}if(rows.length<2)throw new Error('O CSV não contém linhas de histórico.');
  const headers=rows.shift().map(h=>h.trim().toLocaleLowerCase('pt-BR'));
  const at=(r,...names)=>{const ix=headers.findIndex(h=>names.includes(h));return ix<0?'':r[ix]||'';};
- return rows.map((r,i)=>{const comps=[1,2,3,4,5].map(n=>{const v=Number(at(r,'c'+n));return Number.isFinite(v)&&at(r,'c'+n).trim()!==''?Math.max(0,Math.min(200,v)):null;});const scoreRaw=Number(at(r,'nota total','nota'));const score=Number.isFinite(scoreRaw)?scoreRaw:comps.every(v=>v!==null)?comps.reduce((a,b)=>a+b,0):0;return {id:'csv-'+Date.now().toString(36)+'-'+i+'-'+Math.random().toString(36).slice(2,7),theme:at(r,'tema'),date:at(r,'data'),score,comps,notes:at(r,'observações','observacoes'),source:at(r,'origem')||'csv',annotations:[],unlinkedComments:[],errorSummary:[],text:''};}).filter(e=>e.theme||e.date);
+ return rows.map((r,i)=>{const packed=at(r,'dados completos json');if(packed.trim()){try{const full=JSON.parse(packed);if(full&&typeof full==='object'&&full.theme)return {...full,id:String(full.id||('csv-'+Date.now().toString(36)+'-'+i)),source:full.source||'csv'};}catch(_){}}const comps=[1,2,3,4,5].map(n=>{const v=Number(at(r,'c'+n));return Number.isFinite(v)&&at(r,'c'+n).trim()!==''?Math.max(0,Math.min(200,v)):null;});const scoreRaw=Number(at(r,'nota total','nota'));const score=Number.isFinite(scoreRaw)?scoreRaw:comps.every(v=>v!==null)?comps.reduce((a,b)=>a+b,0):0;let errors={},marks={};try{errors=JSON.parse(at(r,'erros e diagnósticos')||'{}');}catch(_){}try{marks=JSON.parse(at(r,'grifos e comentários')||'{}');}catch(_){}return {id:'csv-'+Date.now().toString(36)+'-'+i+'-'+Math.random().toString(36).slice(2,7),theme:at(r,'tema'),date:at(r,'data'),score,comps,notes:at(r,'observações','observacoes'),source:at(r,'origem')||'csv',text:at(r,'texto integral'),errorSummary:errors.errorSummary||[],diagnostics:errors.diagnostics||[],overallFeedback:errors.overallFeedback||'',annotations:marks.annotations||[],unlinkedComments:marks.unlinkedComments||[],comments:marks.comments||[]};}).filter(e=>e.theme||e.date);
 }
 async function handleHistoryImportFile(event){
  const file=event.target.files&&event.target.files[0];event.target.value='';if(!file)return;
@@ -689,7 +706,7 @@ async function handleHistoryImportFile(event){
   $('cancelHistoryImport').addEventListener('click',()=>$('settingsImportResult').innerHTML='');
  }catch(err){$('settingsImportResult').innerHTML=`<div class="parse-alert warn"><strong>Não foi possível importar o histórico.</strong><br>${esc(err.message||'Confira o formato do arquivo.')}</div>`;}
 }
-function downloadBlob(content,name,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);}
+function downloadBlob(content,name,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.rel='noopener';a.style.display='none';document.body.appendChild(a);try{a.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}));}catch(_){a.click();}setTimeout(()=>{a.remove();URL.revokeObjectURL(url);},60000);}
 function normalizeCorrection(raw,essayOverride=''){
  const root=raw&&raw.correction&&typeof raw.correction==='object'?raw.correction:raw;
  if(!root||typeof root!=='object')throw new Error('O conteúdo não contém um objeto de correção.');
